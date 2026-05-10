@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https:/""/fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;900&display=swap');
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; padding-bottom: 120px; overflow-x: hidden; }
         .font-heavy { font-family: 'Archivo Black', sans-serif; }
         .admin-nav {
@@ -31,7 +31,6 @@
 <body>
 
     <header class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 bg-black/90">
-        <img src="ei_1776150431404-removebg-preview.png" class="w-20">
         <h1 class="text-[10px] font-heavy italic text-red-700 uppercase">Nexus Sive Admin</h1>
     </header>
 
@@ -56,25 +55,35 @@
             <option value="prestes">POUCAS UNIDADES</option>
             <option value="acabou">ESGOTADO</option>
         </select>
-        <button onclick="saveProduct()" class="w-full bg-red-800 py-4 rounded-xl font-heavy text-xs uppercase shadow-lg shadow-red-900/20">Criar Produto</button>
+        <button id="btn-save" class="w-full bg-red-800 py-4 rounded-xl font-heavy text-xs uppercase shadow-lg shadow-red-900/20">Criar Produto</button>
     </div>
 
     <nav class="admin-nav">
         <button onclick="switchView('view-manage')" class="nav-btn active" id="nav-manage"><i data-lucide="home"></i></button>
         <button onclick="switchView('view-add')" class="nav-btn" id="nav-add"><i data-lucide="plus"></i></button>
-        <button onclick="switchView('view-orders')" class="nav-btn"><i data-lucide="clock"></i></button>
     </nav>
 
-    <script>
-        lucide.createIcons();
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-        // Feedback de imagem selecionada
-        document.getElementById('p-img').onchange = function() {
-            document.getElementById('img-status').innerText = "IMAGEM CARREGADA";
-            document.getElementById('drop-zone').style.borderColor = "#8B0000";
+        // Configuração do seu arquivo texte.html
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtqANWxSTLOK8K-yLTiTwviDofzLheGxA",
+            authDomain: "nexus-sive.firebaseapp.com",
+            projectId: "nexus-sive",
+            storageBucket: "nexus-sive.firebasestorage.app",
+            messagingSenderId: "450142731292",
+            appId: "1:450142731292:web:5685cf69f350c34bcc33d9"
         };
 
-        function switchView(id) {
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        lucide.createIcons();
+
+        // Troca de abas
+        window.switchView = (id) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -84,118 +93,108 @@
             } else {
                 document.getElementById('nav-add').classList.add('active');
             }
-        }
+        };
 
-        function saveProduct() {
+        // Feedback de imagem
+        document.getElementById('p-img').onchange = function() {
+            document.getElementById('img-status').innerText = "IMAGEM CARREGADA";
+            document.getElementById('drop-zone').style.borderColor = "#8B0000";
+        };
+
+        // Comprimir Imagem
+        const compressImage = (file) => {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 400;
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                };
+            });
+        };
+
+        // Salvar no FIREBASE
+        async function saveProduct() {
+            const btn = document.getElementById('btn-save');
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
             const imgFile = document.getElementById('p-img').files[0];
 
-            if(!name || !price || !imgFile) {
-                alert("Preenche Nome, Preço e Foto!");
+            if(!name || !price || !imgFile) return alert("Preencha todos os campos!");
+
+            btn.disabled = true;
+            btn.innerText = "PUBLICANDO...";
+
+            try {
+                const compressedBase64 = await compressImage(imgFile);
+                
+                await addDoc(collection(db, "produtos"), {
+                    name: name,
+                    price: price,
+                    image: compressedBase64,
+                    category: document.getElementById('p-cat').value,
+                    desc: document.getElementById('p-desc').value,
+                    status: document.getElementById('p-status').value,
+                    createdAt: Date.now()
+                });
+
+                alert("Produto visível para todos os clientes!");
+                window.location.reload();
+            } catch (e) {
+                alert("Erro ao publicar. Verifique sua internet.");
+                btn.disabled = false;
+                btn.innerText = "Criar Produto";
+            }
+        }
+        document.getElementById('btn-save').onclick = saveProduct;
+
+        // Renderizar do FIREBASE
+        async function renderManage() {
+            const list = document.getElementById('manage-list');
+            list.innerHTML = "<p class='text-center text-zinc-500'>Carregando...</p>";
+            
+            const querySnapshot = await getDocs(collection(db, "produtos"));
+            
+            if(querySnapshot.empty) {
+                list.innerHTML = "<p class='text-zinc-600 italic text-center'>Nenhum produto online</p>";
                 return;
             }
 
-            const reader = new FileReader();
-            reader.readAsDataURL(imgFile);
-            
-            reader.onload = function() {
-                const product = {
-                    id: Date.now(),
-                    image: reader.result,
-                    name: name,
-                    price: price,
-                    category: document.getElementById('p-cat').value,
-                    desc: document.getElementById('p-desc').value,
-                    status: document.getElementById('p-status').value
-                };
-
-                let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
-                db.push(product);
-                localStorage.setItem('nexus_db', JSON.stringify(db));
-                
-                alert("Produto Criado!");
-                window.location.reload(); 
-            };
-        }
-async function saveProduct() {
-    const name = document.getElementById('p-name').value;
-    const price = document.getElementById('p-price').value;
-    const imgFile = document.getElementById('p-img').files[0];
-
-    if(!name || !price || !imgFile) return alert("Preenche tudo!");
-
-    // Função para comprimir a imagem
-    const compressImage = (file) => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 400; // Reduz a largura para economizar espaço
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    // Salva como JPEG com qualidade 0.7 (muito mais leve)
-                    resolve(canvas.toDataURL('image/jpeg', 0.7));
-                };
-            };
-        });
-    };
-
-    try {
-        const compressedBase64 = await compressImage(imgFile);
-        const product = {
-            id: Date.now(),
-            image: compressedBase64,
-            name: name,
-            price: price,
-            category: document.getElementById('p-cat').value,
-            desc: document.getElementById('p-desc').value,
-            status: document.getElementById('p-status').value
-        };
-
-        let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
-        db.push(product);
-        localStorage.setItem('nexus_db', JSON.stringify(db));
-        
-        alert("Produto Criado com Sucesso!");
-        window.location.reload();
-    } catch (e) {
-        alert("Erro: Memória cheia. Apaga produtos antigos ou usa uma imagem menor.");
-        console.error(e);
-    }
-}
-
-        function renderManage() {
-            const list = document.getElementById('manage-list');
-            const db = JSON.parse(localStorage.getItem('nexus_db')) || [];
-            if(db.length === 0) { list.innerHTML = "<p class='text-zinc-600 italic text-center'>Vazio</p>"; return; }
-
-            list.innerHTML = db.map(p => `
-                <div class="card-manage flex items-center gap-4">
-                    <img src="${p.image}" class="w-14 h-14 rounded-lg object-cover">
-                    <div class="flex-1">
-                        <h4 class="text-[11px] font-black uppercase tracking-widest">${p.name}</h4>
-                        <p class="text-[10px] text-red-700 font-bold">${p.price} MT</p>
+            list.innerHTML = "";
+            querySnapshot.forEach((docSnap) => {
+                const p = docSnap.data();
+                const id = docSnap.id;
+                list.innerHTML += `
+                    <div class="card-manage flex items-center gap-4">
+                        <img src="${p.image}" class="w-14 h-14 rounded-lg object-cover">
+                        <div class="flex-1">
+                            <h4 class="text-[11px] font-black uppercase tracking-widest">${p.name}</h4>
+                            <p class="text-[10px] text-red-700 font-bold">${p.price} MT</p>
+                        </div>
+                        <button onclick="deleteProduct('${id}')" class="text-zinc-500"><i data-lucide="trash-2" class="w-4"></i></button>
                     </div>
-                    <button onclick="deleteProduct(${p.id})" class="text-zinc-800"><i data-lucide="trash-2"></i></button>
-                </div>
-            `).join('');
+                `;
+            });
             lucide.createIcons();
         }
 
-        function deleteProduct(id) {
-            let db = JSON.parse(localStorage.getItem('nexus_db'));
-            db = db.filter(p => p.id !== id);
-            localStorage.setItem('nexus_db', JSON.stringify(db));
-            renderManage();
-        }
+        // Deletar do FIREBASE
+        window.deleteProduct = async (id) => {
+            if(confirm("Deseja apagar este produto?")) {
+                await deleteDoc(doc(db, "produtos", id));
+                renderManage();
+            }
+        };
 
         window.onload = renderManage;
     </script>
