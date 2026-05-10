@@ -1,16 +1,207 @@
-/* Efeito de brilho nos cards de produto */
-.product-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARKETPLACE | NEXUS SIVE</title>
 
-.product-card:hover {
-    transform: translateY(-5px);
-    border-color: #8B0000;
-    box-shadow: 0 10px 30px -10px rgba(139, 0, 0, 0.3);
-}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-/* Scrollbar personalizada */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #000; }
-::-webkit-scrollbar-thumb { background: #8B0000; border-radius: 10px; }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;900&display=swap');
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-heavy { font-family: 'Archivo Black', sans-serif; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #8B0000; border-radius: 10px; }
+        
+        .glass-nav { 
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
+            width: 280px; height: 60px; background: rgba(15, 15, 15, 0.8); 
+            backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 999px; display: flex; justify-content: space-around; 
+            align-items: center; z-index: 1000; 
+        }
+
+        #modal-cart { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.96); backdrop-filter: blur(10px); 
+            z-index: 5000; align-items: center; justify-content: center; 
+        }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING INTRO -->
+    <div id="intro-overlay" class="fixed inset-0 bg-black z-[6000] flex flex-col items-center justify-center transition-opacity duration-1000">
+        <img src="ei_1776150431404-removebg-preview.png" alt="NEXUS" class="w-32 animate-pulse mb-6">
+        <h2 id="typewriter" class="text-[10px] tracking-[0.5em] uppercase text-zinc-600 italic font-light"></h2>
+    </div>
+
+    <header class="p-8 pt-16 max-w-4xl mx-auto">
+        <img src="ei_1776150431404-removebg-preview.png" class="w-28 mb-10 cursor-pointer">
+        <input type="text" id="search-input" oninput="searchProducts()" placeholder="PROCURAR ARTIGO..." class="w-full bg-zinc-950 border border-zinc-900 p-5 rounded-2xl text-[10px] uppercase font-black tracking-widest outline-none focus:border-red-900 transition text-white">
+    </header>
+
+    <main class="max-w-4xl mx-auto px-8 pb-40">
+        <h2 class="text-3xl font-heavy italic tracking-tighter text-red-700 uppercase mb-8" data-aos="fade-right">Drops</h2>
+        <div id="product-list"></div>
+    </main>
+
+    <nav class="glass-nav">
+        <a href="#" class="text-[9px] font-black tracking-widest opacity-40 hover:opacity-100 transition">HOME</a>
+        <button onclick="toggleCart()" class="relative">
+            <span class="text-[9px] font-black tracking-widest text-red-600">BAG</span>
+            <div id="cart-dot" class="absolute -top-2 -right-2 w-2 h-2 bg-white rounded-full hidden"></div>
+        </button>
+        <a href="https://wa.me/258879151175" target="_blank" class="text-[9px] font-black tracking-widest opacity-40 hover:opacity-100 transition">CHAT</a>
+    </nav>
+
+    <!-- MODAL DA BAG -->
+    <div id="modal-cart">
+        <div class="bg-[#080808] border border-red-900/20 w-[92%] max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-heavy italic text-white uppercase tracking-tighter">Sua Bag</h2>
+                <button onclick="toggleCart()" class="text-zinc-500 text-xs font-black uppercase">Fechar</button>
+            </div>
+
+            <div id="cartItems" class="max-h-48 overflow-y-auto mb-6 space-y-3 pr-2"></div>
+
+            <div class="space-y-4 border-t border-zinc-900 pt-6">
+                <!-- SELEÇÃO DE BAIRROS ATUALIZADA -->
+                <div>
+                    <label class="text-[9px] font-black text-zinc-500 uppercase ml-1 mb-1 block">Local de Entrega (Matola)</label>
+                    <select id="location" class="w-full bg-zinc-950 border border-zinc-900 text-white p-4 rounded-2xl outline-none text-xs font-bold appearance-none">
+                        <optgroup label="Matola" class="bg-black">
+                            <option value="Malhapsene">Malhapsene</option>
+                            <option value="Tchumene">Tchumene</option>
+                            <option value="Liberdade">Liberdade</option>
+                            <option value="Matola C">Matola C</option>
+                            <option value="Matola F">Matola F</option>
+                            <option value="Matola G">Matola G</option>
+                            <option value="Matola Gare">Matola Gare</option>
+                            <option value="Matola J">Matola J</option>
+                            <option value="Matola Rio">Matola Rio</option>
+                            <option value="Machava">Machava</option>
+                            <option value="Singatela">Singatela</option>
+                            <option value="Tsalala">Tsalala</option>
+                            <option value="Fomento">Fomento</option>
+                        </optgroup>
+                        <optgroup label="Outras Zonas" class="bg-black">
+                            <option value="Cidade de Maputo">Cidade de Maputo</option>
+                            <option value="Outra">Outro Local</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <input type="tel" id="phone" placeholder="TEU CONTACTO" class="w-full bg-zinc-950 border border-zinc-900 text-white p-4 rounded-2xl outline-none text-xs font-bold">
+                
+                <button onclick="sendOrder()" class="w-full bg-red-700 text-white font-black py-5 rounded-2xl text-[10px] uppercase tracking-[0.2em] hover:bg-red-600 transition">Finalizar no WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        let productsDB = JSON.parse(localStorage.getItem("nexus_db")) || [];
+        let bag = JSON.parse(localStorage.getItem("nexus_bag")) || [];
+
+        function renderProducts(data = productsDB) {
+            const list = document.getElementById("product-list");
+            if (data.length === 0) {
+                list.innerHTML = `<div class="py-32 text-center opacity-10"><p class="font-heavy italic uppercase text-3xl">Vazio</p></div>`;
+                return;
+            }
+            list.innerHTML = data.map((p, index) => `
+                <div class="product-card" data-aos="fade-up">
+                    <div class="aspect-square bg-zinc-950 border border-zinc-900 rounded-[2.5rem] overflow-hidden mb-6">
+                        <img src="${p.image}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex justify-between items-start mb-6 px-2">
+                        <div><h3 class="text-2xl font-heavy italic uppercase mb-1 leading-none">${p.name}</h3><p class="text-zinc-500 text-[9px] uppercase font-bold tracking-widest">${p.desc}</p></div>
+                        <span class="text-xl font-black text-red-700 whitespace-nowrap">${p.price} MT</span>
+                    </div>
+                    <button onclick="addToBag(${index})" class="w-full bg-white text-black font-black py-5 rounded-2xl text-[9px] uppercase hover:bg-red-800 hover:text-white transition-all">Adicionar à Bag</button>
+                </div>`).join("");
+        }
+
+        function addToBag(index) {
+            bag.push(productsDB[index]);
+            localStorage.setItem("nexus_bag", JSON.stringify(bag));
+            document.getElementById("cart-dot").classList.remove("hidden");
+            updateCartUI();
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById("modal-cart");
+            modal.style.display = (modal.style.display === "flex") ? "none" : "flex";
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById("cartItems");
+            if (bag.length === 0) { container.innerHTML = `<p class="text-center py-6 text-zinc-700 text-[9px] font-black uppercase">Sua bag está vazia</p>`; return; }
+            container.innerHTML = bag.map((item, i) => `
+                <div class="flex justify-between items-center bg-zinc-900/20 p-4 rounded-2xl border border-white/5">
+                    <div><p class="font-black text-white uppercase text-[9px]">${item.name}</p><p class="text-red-700 font-black text-[10px]">${item.price} MT</p></div>
+                    <button onclick="removeFromBag(${i})" class="text-[8px] font-black text-zinc-500 uppercase border border-zinc-800 px-3 py-1 rounded-lg">Remover</button>
+                </div>`).join("");
+        }
+
+        function removeFromBag(i) {
+            bag.splice(i, 1);
+            localStorage.setItem("nexus_bag", JSON.stringify(bag));
+            updateCartUI();
+            if(bag.length === 0) document.getElementById("cart-dot").classList.add("hidden");
+        }
+
+        function searchProducts() {
+            const term = document.getElementById("search-input").value.toLowerCase();
+            const filtered = productsDB.filter(p => p.name.toLowerCase().includes(term));
+            renderProducts(filtered);
+        }
+
+        function sendOrder() {
+            const phone = document.getElementById("phone").value;
+            const loc = document.getElementById("location").value;
+
+            if (bag.length === 0) { alert("Sua bag está vazia!"); return; }
+            if (!phone || phone.length < 5) { alert("Insira o seu contacto."); return; }
+
+            let msg = `PEDIDO - NEXUS SIVE%0A`;
+            msg += `_______________________________%0A%0A`;
+            
+            let total = 0;
+            bag.forEach((item, i) => {
+                msg += `${i + 1}. ${item.name.toUpperCase()} - ${item.price} MT%0A`;
+                const numericPrice = parseFloat(item.price.toString().replace(/[^0-9.]/g, '')) || 0;
+                total += numericPrice;
+            });
+
+            msg += `_______________________________%0A%0A`;
+            msg += `TOTAL: ${total} MT%0A`;
+            msg += `BAIRRO: ${loc.toUpperCase()}%0A`;
+            msg += `CONTACTO: ${phone}%0A%0A`;
+            msg += `_Enviado pelo Marketplace Nexus_`;
+
+            window.location.href = `https://wa.me/258879151175?text=${msg}`;
+        }
+
+        function startIntro() {
+            const slogan = "Small details, big differences.";
+            let i = 0;
+            const el = document.getElementById("typewriter");
+            const timer = setInterval(() => {
+                if (i < slogan.length) { el.innerHTML += slogan.charAt(i); i++; } 
+                else { clearInterval(timer); setTimeout(() => document.getElementById("intro-overlay").classList.add("opacity-0", "pointer-events-none"), 1000); }
+            }, 50);
+        }
+
+        window.onload = () => { startIntro(); renderProducts(); if(bag.length > 0) document.getElementById("cart-dot").classList.remove("hidden"); };
+    </script>
+</body>
+</html>
