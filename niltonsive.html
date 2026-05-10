@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN | NEXUS SIVE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https:/""/fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;900&display=swap');
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; padding-bottom: 120px; overflow-x: hidden; }
+        .font-heavy { font-family: 'Archivo Black', sans-serif; }
+        .admin-nav {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 260px; height: 65px; background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(20px); border-radius: 99px; display: flex; 
+            justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+        }
+        .view { display: none; padding: 100px 20px 40px; }
+        .view.active { display: block; }
+        .input-admin { 
+            width: 100%; background: #080808; border: 1px solid #1a1a1a; 
+            padding: 16px; border-radius: 12px; color: #fff; margin-bottom: 12px;
+            font-size: 13px; outline: none;
+        }
+        .nav-btn { color: #444; transition: 0.3s; background: none; border: none; }
+        .nav-btn.active { color: #8B0000; }
+        .card-manage { background: #050505; border: 1px solid #111; padding: 15px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+
+    <header class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 bg-black/90">
+        <img src="ei_1776150431404-removebg-preview.png" class="w-20">
+        <h1 class="text-[10px] font-heavy italic text-red-700 uppercase">Nexus Sive Admin</h1>
+    </header>
+
+    <div id="view-manage" class="view active">
+        <h2 class="text-2xl font-heavy italic mb-6 uppercase">Stock Atual</h2>
+        <div id="manage-list" class="space-y-4"></div>
+    </div>
+
+    <div id="view-add" class="view">
+        <h2 class="text-2xl font-heavy italic mb-6 uppercase text-red-700">Novo Drop</h2>
+        <div class="w-full h-40 border-2 border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center mb-4 bg-zinc-950" id="drop-zone" onclick="document.getElementById('p-img').click()">
+            <i data-lucide="camera" class="text-zinc-700 mb-2"></i>
+            <span id="img-status" class="text-[9px] text-zinc-600 font-black uppercase">Selecionar Foto</span>
+            <input type="file" id="p-img" class="hidden" accept="image/*">
+        </div>
+        <input type="text" id="p-name" placeholder="NOME DO PRODUTO" class="input-admin">
+        <input type="number" id="p-price" placeholder="PREÇO (MT)" class="input-admin">
+        <input type="text" id="p-cat" placeholder="CATEGORIA" class="input-admin">
+        <textarea id="p-desc" placeholder="DESCRIÇÃO" class="input-admin h-20"></textarea>
+        <select id="p-status" class="input-admin">
+            <option value="disponivel">EM STOCK</option>
+            <option value="prestes">POUCAS UNIDADES</option>
+            <option value="acabou">ESGOTADO</option>
+        </select>
+        <button onclick="saveProduct()" class="w-full bg-red-800 py-4 rounded-xl font-heavy text-xs uppercase shadow-lg shadow-red-900/20">Criar Produto</button>
+    </div>
+
+    <nav class="admin-nav">
+        <button onclick="switchView('view-manage')" class="nav-btn active" id="nav-manage"><i data-lucide="home"></i></button>
+        <button onclick="switchView('view-add')" class="nav-btn" id="nav-add"><i data-lucide="plus"></i></button>
+        <button onclick="switchView('view-orders')" class="nav-btn"><i data-lucide="clock"></i></button>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+
+        // Feedback de imagem selecionada
+        document.getElementById('p-img').onchange = function() {
+            document.getElementById('img-status').innerText = "IMAGEM CARREGADA";
+            document.getElementById('drop-zone').style.borderColor = "#8B0000";
+        };
+
+        function switchView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'view-manage') {
+                document.getElementById('nav-manage').classList.add('active');
+                renderManage();
+            } else {
+                document.getElementById('nav-add').classList.add('active');
+            }
+        }
+
+        function saveProduct() {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const imgFile = document.getElementById('p-img').files[0];
+
+            if(!name || !price || !imgFile) {
+                alert("Preenche Nome, Preço e Foto!");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(imgFile);
+            
+            reader.onload = function() {
+                const product = {
+                    id: Date.now(),
+                    image: reader.result,
+                    name: name,
+                    price: price,
+                    category: document.getElementById('p-cat').value,
+                    desc: document.getElementById('p-desc').value,
+                    status: document.getElementById('p-status').value
+                };
+
+                let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+                db.push(product);
+                localStorage.setItem('nexus_db', JSON.stringify(db));
+                
+                alert("Produto Criado!");
+                window.location.reload(); 
+            };
+        }
+async function saveProduct() {
+    const name = document.getElementById('p-name').value;
+    const price = document.getElementById('p-price').value;
+    const imgFile = document.getElementById('p-img').files[0];
+
+    if(!name || !price || !imgFile) return alert("Preenche tudo!");
+
+    // Função para comprimir a imagem
+    const compressImage = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; // Reduz a largura para economizar espaço
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    // Salva como JPEG com qualidade 0.7 (muito mais leve)
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+            };
+        });
+    };
+
+    try {
+        const compressedBase64 = await compressImage(imgFile);
+        const product = {
+            id: Date.now(),
+            image: compressedBase64,
+            name: name,
+            price: price,
+            category: document.getElementById('p-cat').value,
+            desc: document.getElementById('p-desc').value,
+            status: document.getElementById('p-status').value
+        };
+
+        let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+        db.push(product);
+        localStorage.setItem('nexus_db', JSON.stringify(db));
+        
+        alert("Produto Criado com Sucesso!");
+        window.location.reload();
+    } catch (e) {
+        alert("Erro: Memória cheia. Apaga produtos antigos ou usa uma imagem menor.");
+        console.error(e);
+    }
+}
+
+        function renderManage() {
+            const list = document.getElementById('manage-list');
+            const db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+            if(db.length === 0) { list.innerHTML = "<p class='text-zinc-600 italic text-center'>Vazio</p>"; return; }
+
+            list.innerHTML = db.map(p => `
+                <div class="card-manage flex items-center gap-4">
+                    <img src="${p.image}" class="w-14 h-14 rounded-lg object-cover">
+                    <div class="flex-1">
+                        <h4 class="text-[11px] font-black uppercase tracking-widest">${p.name}</h4>
+                        <p class="text-[10px] text-red-700 font-bold">${p.price} MT</p>
+                    </div>
+                    <button onclick="deleteProduct(${p.id})" class="text-zinc-800"><i data-lucide="trash-2"></i></button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function deleteProduct(id) {
+            let db = JSON.parse(localStorage.getItem('nexus_db'));
+            db = db.filter(p => p.id !== id);
+            localStorage.setItem('nexus_db', JSON.stringify(db));
+            renderManage();
+        }
+
+        window.onload = renderManage;
+    </script>
+</body>
+</html>

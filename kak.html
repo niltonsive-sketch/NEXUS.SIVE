@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS SIVE | OWNER OF THE ROAD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;900&display=swap');
+        
+        body { background-color: #000; color: #FCFCFC; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-heavy { font-family: 'Archivo Black', sans-serif; }
+        
+        /* HEADER PROTEGIDO CONTRA SOBREPOSIÇÃO */
+        header {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        /* O EFEITO CROMADO AMADO NO HOVER */
+        .brand-logo:hover h1 {
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));
+            transition: 0.4s ease;
+        }
+        .brand-logo:hover .brand-nexus { color: #8B0000; text-shadow: 2px 2px 10px rgba(139, 0, 0, 0.5); }
+        .brand-logo:hover .brand-sive { color: #fff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
+        
+        .brand-nexus { color: #fff; transition: 0.4s; }
+        .brand-sive { color: #FF0B0B; transition: 0.4s; }
+
+        .text-outline { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.6); }
+        
+        /* Seta Animada */
+        .scroll-arrow { animation: bounce-arrow 2s infinite; }
+        @keyframes bounce-arrow {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Botões Slim */
+        .btn-slim { width: 220px; padding: 12px 0; border-radius: 9999px; text-transform: uppercase; font-weight: 900; font-size: 0.7rem; letter-spacing: 0.2em; transition: all 0.4s; text-align: center; display: inline-block; }
+        .btn-white { background: #fff; color: #000; }
+        .btn-green { background: #128C7E; color: #fff; }
+
+        /* FAQ GIGANTE */
+        .faq-card { background: #000; border: 1px solid #1a1a1a; border-radius: 40px; margin-bottom: 20px; transition: 0.3s; }
+        .faq-card:hover { border-color: #FF0F0F; transform: scale(1.01); }
+        details summary::-webkit-details-marker { display: none; }
+        
+        #feedback-popup { display: none; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body>
+
+    <header class="fixed top-0 left-0 right-0 z-50 p-6 md:p-10 flex justify-between items-center transition-all">
+        <div data-aos="fade-down" class="brand-logo cursor-pointer group">
+            <h1 class="text-2xl md:text-3xl font-heavy leading-[0.85] tracking-tighter">
+                <span class="brand-nexus">NEXUS</span><br>
+                <span class="brand-sive text-xl md:text-2xl">SIVE</span>
+            </h1>
+        </div>
+        <div class="px-5 py-2 border border-zinc-900 rounded-full text-[9px] font-black uppercase tracking-widest bg-black" data-aos="fade-down">Bag (0)</div>
+    </header>
+
+    <section class="h-screen flex flex-col items-center justify-center text-center px-4 relative">
+        <div data-aos="zoom-out">
+            <p class="text-[9px] uppercase tracking-[1em] text-zinc-600 mb-8 font-bold">From Moz 2 The World // 2026</p>
+            <div class="flex flex-col mb-12">
+                <h2 class="text-6xl md:text-[100px] font-heavy leading-[0.8] tracking-tighter mb-4 italic">NEXUS</h2>
+                <h2 class="text-4xl md:text-[60px] font-heavy text-outline uppercase tracking-widest italic">#STREETW€AR</h2>
+            </div>
+            <div class="flex flex-col items-center gap-4 mb-20">
+                <a href="marketplace.html" class="btn-slim btn-white">MARKETPLACE </a>
+                <a href="https://wa.me/258879151175" class="btn-slim btn-green">WHATSAPP</a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 scroll-arrow">
+            <svg class="w-8 h-8 text-red-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </div>
+    </section>
+
+    <div class="py-10 overflow-hidden border-y border-zinc-900 bg-black">
+        <div data-aos="fade-right" data-aos-duration="1500" class="px-10">
+            <h3 class="text-2xl md:text-4xl font-heavy uppercase italic">
+                Alguns produtos <span class="text-red-700 underline decoration-2 underline-offset-8">que tens de ver</span>
+            </h3>
+        </div>
+    </div>
+    
+    <section class="py-32 px-6 bg-black">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="text-3xl md:text-4xl font-heavy uppercase mb-16 italic text-center" data-aos="fade-down">PERGUNTAS <span class="brand-sive">FREQUENTES</span></h3>
+            <div class="space-y-6">
+                <details class="faq-card group" data-aos="fade-right">
+                    <summary class="p-8 flex justify-between items-center cursor-pointer list-none font-heavy uppercase text-lg md:text-2xl">
+                        Como funcionam as entregas? <span class="brand-sive">＋</span>
+                    </summary>
+                    <div class="px-8 pb-8 text-zinc-400 text-sm">Entregamos em Maputo/Matola 48h.</div>
+                </details>
+                <details class="faq-card group" data-aos="fade-left">
+                    <summary class="p-8 flex justify-between items-center cursor-pointer list-none font-heavy uppercase text-lg md:text-2xl">
+                        Métodos de pagamento? <span class="brand-sive">＋</span>
+                    </summary>
+                    <div class="px-8 pb-8 text-zinc-400 text-sm">M-Pesa, E-Mola e Transferência.</div>
+                </details>
+                <details class="faq-card group" data-aos="fade-right">
+                    <summary class="p-8 flex justify-between items-center cursor-pointer list-none font-heavy uppercase text-lg md:text-2xl">
+                        Onde fica a loja? <span class="brand-sive">＋</span>
+                    </summary>
+                    <div class="px-8 pb-8 text-zinc-400 text-sm">100% Online Authority.</div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 px-6 border-t border-zinc-900">
+        <div class="max-w-6xl mx-auto text-center">
+            <h3 class="text-4xl font-heavy uppercase mb-20 italic" data-aos="fade-up">VOZ DAS <span class="brand-sive">RUAS</span></h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                <div class="p-10 border border-zinc-900 rounded-[40px] bg-black text-left" data-aos="flip-left">
+                    <p class="text-sm text-zinc-500 italic mb-6">"Qualidade internacional em Maputo."</p>
+                    <p class="font-heavy text-xs brand-sive tracking-widest uppercase">@STREET_BOSS</p>
+                </div>
+                <div class="p-10 border border-zinc-900 rounded-[40px] bg-black text-left" data-aos="flip-left" data-aos-delay="200">
+                    <p class="text-sm text-zinc-500 italic mb-6">"Pack de luxo e entrega rápida."</p>
+                    <p class="font-heavy text-xs brand-sive tracking-widest uppercase">@DOPEMAN_258</p>
+                </div>
+                <div class="p-10 border border-zinc-900 rounded-[40px] bg-black text-left" data-aos="flip-left" data-aos-delay="400">
+                    <p class="text-sm text-zinc-500 italic mb-6">"A autoridade do streetwear."</p>
+                    <p class="font-heavy text-xs brand-sive tracking-widest uppercase">@NEXUS_FAN</p>
+                </div>
+            </div>
+            <button onclick="document.getElementById('feedback-popup').style.display='flex'" class="px-12 py-4 bg-white text-black font-heavy uppercase text-xs rounded-full hover:scale-110 transition duration-500">Log Your Feedback</button>
+        </div>
+    </section>
+    </funcion>
+    <script>
+    AOS.init({ duration: 1000, once: false, mirror: true });
+
+    function loadHomeData() {
+        // --- LÓGICA DE PRODUTOS (Puxa os 3 primeiros do Marketplace) ---
+        const productsContainer = document.getElementById('home-products-list');
+        const db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+        
+        // Pega apenas os 3 primeiros produtos
+        const displayProducts = db.slice(0, 3);
+
+        if (displayProducts.length > 0) {
+            productsContainer.innerHTML = displayProducts.map(p => `
+                <div class="group" data-aos="fade-up">
+                    <div class="aspect-[4/5] bg-zinc-950 rounded-[40px] border border-zinc-900 group-hover:border-red-900 transition-all overflow-hidden">
+                        <img src="${p.image}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-duration-500">
+                    </div>
+                    <div class="mt-6 flex justify-between px-4 font-heavy uppercase text-sm md:text-base">
+                        <span>${p.name}</span>
+                        <span class="brand-sive">${p.price} MT</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- LÓGICA DE DEPOIMENTOS ---
+        const testimonialsContainer = document.getElementById('testimonials-list');
+        const feedbackDb = JSON.parse(localStorage.getItem('nexus_feedback')) || [];
+
+        if (feedbackDb.length > 0) {
+            testimonialsContainer.innerHTML = feedbackDb.map(f => `
+                <div class="p-10 border border-zinc-900 rounded-[40px] bg-black text-left" data-aos="flip-left">
+                    <p class="text-sm text-zinc-500 italic mb-6">"${f.message}"</p>
+                    <p class="font-heavy text-xs brand-sive tracking-widest uppercase">@${f.user}</p>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Função para o usuário enviar feedback pelo Popup
+    function sendFeedback() {
+        const user = document.querySelector('#feedback-popup input').value;
+        const message = document.querySelector('#feedback-popup textarea').value;
+
+        if(!user || !message) return alert("Preenche os campos!");
+
+        const feedbackDb = JSON.parse(localStorage.getItem('nexus_feedback')) || [];
+        feedbackDb.push({ user, message });
+        localStorage.setItem('nexus_feedback', JSON.stringify(feedbackDb));
+
+        alert("Feedback enviado para as ruas!");
+        document.getElementById('feedback-popup').style.display='none';
+        loadHomeData(); // Atualiza a tela na hora
+    }
+
+    // Vincula a função ao botão do popup
+    document.querySelector('#feedback-popup button.bg-red-900').onclick = sendFeedback;
+
+    window.onload = loadHomeData;
+</script>
+
+</funcion>
+<section class="py-24 px-6">
+    <div id="home-products-list" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        </div>
+</section>
+
+<section class="py-32 px-6 border-t border-zinc-900">
+    <div class="max-w-6xl mx-auto text-center">
+        <h3 class="text-4xl font-heavy uppercase mb-20 italic" data-aos="fade-up">RICH <span class="brand-sive">ZONE</span></h3>
+        <div id="testimonials-list" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+            </div>
+       
+    </div>
+</section>
+
+    <div id="feedback-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="bg-black w-full max-w-md p-10 rounded-[50px] border border-zinc-800 relative">
+            <button onclick="document.getElementById('feedback-popup').style.display='none'" class="absolute top-8 right-8 text-zinc-500 text-2xl">✕</button>
+            <h4 class="text-2xl font-heavy uppercase mb-8 brand-sive italic text-center">Drop your voice</h4>
+            <input type="text" placeholder="Instagram" class="w-full bg-zinc-950 border border-zinc-900 p-5 rounded-2xl mb-4 text-sm outline-none">
+            <textarea placeholder="Mensagem..." class="w-full bg-zinc-950 border border-zinc-900 p-5 rounded-2xl mb-8 text-sm h-32 outline-none"></textarea>
+            <button class="w-full py-5 bg-red-900 text-white font-heavy uppercase rounded-2xl tracking-widest">Enviar</button>
+        </div>
+    </div>
+
+    <footer class="py-40 text-center border-t border-zinc-900">
+        <div data-aos="zoom-in">
+            <h2 class="text-4xl md:text-7xl font-heavy brand-sive italic tracking-tighter">#OWNER OF THE ROAD</h2>
+            <p class="text-[8px] font-black tracking-[2em] text-zinc-800 uppercase mt-12">NEXUS SIVE AUTHORITY © 2026</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: false, mirror: true });
+    </script>
+</body>
+</html>            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <div id="dot" class="absolute -top-1 -right-1 w-2 h-2 bg-red-700 rounded-full hidden"></div>
+        </button>
+        <a href="https://wa.me/258879151175">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </a>
+    </nav>
+
+    <
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="admin-user" placeholder="NÚMERO" class="input-nexus text-center font-bold">
+                <input type="password" id="admin-pass" placeholder="PASSWORD" class="input-nexus text-center font-bold">
+                <button onclick="checkAdmin()" class="btn-main bg-red-800 text-white">Entrar no Painel</button>
+                <button onclick="closeAdmin()" class="w-full text-[10px] text-zinc-600 uppercase font-black mt-4">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        // Intro
+        const slogan = "Small details, big differences.";
+        let i = 0;
+        function type() {
+            if (i < slogan.length) {
+                document.getElementById("typewriter").innerHTML += slogan.charAt(i);
+                i++; setTimeout(type, 50);
+            } else {
+                setTimeout(() => {
+                    document.getElementById("intro-overlay").style.opacity = "0";
+                    setTimeout(() => document.getElementById("intro-overlay").style.visibility = "hidden", 800);
+                }, 1500);
+            }
+        }
+
+
+        function openCart() {
+            document.getElementById('modal-cart').style.display = 'block';
+            const list = document.getElementById('bag-list');
+            list.innerHTML = bag.length > 0 ? bag.map(i => `<div class="flex justify-between border-b border-zinc-900 pb-3"><span>${i.name}</span><span class="font-bold text-red-700">${i.price}</span></div>`).join('') : '<p class="text-zinc-700 italic text-center py-10">Vazio</p>';
+        }
+
+        function closeCart() { document.getElementById('modal-cart').style.display = 'none'; }
+        function showForm() { document.getElementById('step-1').classList.add('hidden-step'); document.getElementById('step-2').classList.remove('hidden-step'); }
+        function backToStep1() { document.getElementById('step-1').classList.remove('hidden-step'); document.getElementById('step-2').classList.add('hidden-step'); }
+
+        function toggleDel(val) {
+            isDel = val;
+            document.getElementById('del-fields').classList.toggle('hidden-step', !val);
+            document.getElementById('pick-fields').classList.toggle('hidden-step', val);
+            document.getElementById('opt-del').style.borderColor = val ? '#8B0000' : '#1a1a1a';
+            document.getElementById('opt-pick').style.borderColor = !val ? '#8B0000' : '#1a1a1a';
+        }
+
+        function sendWA() {
+            let msg = `*NOVA ORDEM - NEXUS SIVE*%0A%0A`;
+            bag.forEach(i => msg += `• ${i.name} (${i.price})%0A`);
+            msg += `%0A*Cliente:* ${document.getElementById('nome').value}%0A*Metodo:* ${isDel ? 'Entrega' : 'Levantamento'}`;
+            window.open(`https://wa.me/258879151175?text=${msg}`);
+        }
+
+        function loadProducts() {
+            const container = document.getElementById('product-list');
+            const db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+
+            if (db.length === 0) {
+                container.innerHTML = `
+                    <div class="py-20 text-center">
+                        <p class="text-zinc-800 font-heavy italic uppercase text-2xl opacity-20">No Drops Yet</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = db.map(p => `
+                <section class="product-card" data-aos="fade-up">
+                    <div class="img-container">
+                        <img src="${p.image}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="px-2">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-2xl font-heavy italic uppercase">${p.name}</h3>
+                            <span class="text-xl font-black text-red-800">${p.price} MT</span>
+                        </div>
+                        <p class="text-zinc-500 text-xs mb-8 uppercase tracking-tighter">${p.desc}</p>
+                        <div class="space-y-3">
+                            <button onclick="addBag('${p.name}', '${p.price} MT')" class="btn-main bg-white text-black">
+                                Adicionar à Bag
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `).join('');
+        }
+
+        window.onload = () => {
+            type();
+            loadProducts();
+        };
+        // VERIFICAÇÃO DE CREDENCIAIS (MANUAL)
+        function checkAdmin() {
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+
+            if (user === "879151175" && pass === "N!ltonsive$") {
+                location.href = 'niltonsive.html';
+            } else {
+                alert("Dados incorretos.");
+                document.getElementById('admin-pass').value = "";
+            }
+        }
+
+        function closeAdmin() { 
+            document.getElementById('admin-modal').style.display = 'none'; 
+            document.getElementById('admin-user').value = "";
+            document.getElementById('admin-pass').value = "";
+        }
+    </script>
+</body>
+</html>
+                    
+
+    
+       
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        // Intro
+        const slogan = "Small details, big differences.";
+        let i = 0;
+        function type() {
+            if (i < slogan.length) {
+                document.getElementById("typewriter").innerHTML += slogan.charAt(i);
+                i++; setTimeout(type, 50);
+            } else {
+                setTimeout(() => {
+                    document.getElementById("intro-overlay").style.opacity = "0";
+                    setTimeout(() => document.getElementById("intro-overlay").style.visibility = "hidden", 800);
+                }, 1500);
+            }
+        }
+        window.onload = type;
+
+      }
+
+        function closeCart() { document.getElementById('modal-cart').style.display = 'none'; }
+        function showForm() { document.getElementById('step-1').classList.add('hidden-step'); document.getElementById('step-2').classList.remove('hidden-step'); }
+        function backToStep1() { document.getElementById('step-1').classList.remove('hidden-step'); document.getElementById('step-2').classList.add('hidden-step'); }
+
+        function toggleDel(val) {
+            isDel = val;
+            document.getElementById('del-fields').classList.toggle('hidden-step', !val);
+            document.getElementById('pick-fields').classList.toggle('hidden-step', val);
+            document.getElementById('opt-del').style.borderColor = val ? '#8B0000' : '#1a1a1a';
+            document.getElementById('opt-pick').style.borderColor = !val ? '#8B0000' : '#1a1a1a';
+        }
+
+       
+        }
+// Substitua o conteúdo da sua tag <script> por este:
+
+function loadProducts() {
+    const container = document.getElementById('product-list');
+    const db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+
+    if (db.length === 0) {
+        container.innerHTML = `
+            <div class="py-20 text-center">
+                <p class="text-zinc-800 font-heavy italic uppercase text-2xl opacity-20">No Drops Yet</p>
+            </div>`;
+        return;
+    }
+.join('');
+}
+
+// Chame loadProducts() dentro do window.onload
+window.onload = () => {
+    type(); // sua função de intro
+    loadProducts();
+};
+
