@@ -47,7 +47,8 @@
 
     <main class="max-w-4xl mx-auto px-8 pb-40">
         <h2 class="text-3xl font-heavy italic tracking-tighter text-red-700 uppercase mb-8" data-aos="fade-right">Drops</h2>
-        <div id="product-list"></div>
+        <!-- Grelha responsiva adicionada -->
+        <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
     </main>
 
     <nav class="glass-nav">
@@ -107,16 +108,52 @@
     <script>
         AOS.init({ duration: 1000, once: true });
 
-        let productsDB = JSON.parse(localStorage.getItem("nexus_db")) || [];
+        // Produtos predefinidos para inicialização automática
+        const defaultProducts = [
+            {
+                name: "Nexus Core Hoodie",
+                desc: "Heavyweight black oversized graphic hoodie",
+                price: "3500",
+                image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop"
+            },
+            {
+                name: "Matrix Cargo Pants",
+                desc: "Tactical multi-pocket cargo pants",
+                price: "4000",
+                image: "https://images.unsplash.com/photo-1517462964-21fdcec3f25b?q=80&w=600&auto=format&fit=crop"
+            },
+            {
+                name: "Cyberpunk Graphic Tee",
+                desc: "Premium acid-wash graphic t-shirt",
+                price: "1800",
+                image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop"
+            },
+            {
+                name: "Nexus Beanie",
+                desc: "Ribbed knit classic logo beanie",
+                price: "900",
+                image: "https://images.unsplash.com/photo-1576871337622-98d48d4aa53e?q=80&w=600&auto=format&fit=crop"
+            }
+        ];
+
+        let productsDB = JSON.parse(localStorage.getItem("nexus_db"));
+        if (!productsDB || productsDB.length === 0) {
+            productsDB = defaultProducts;
+            localStorage.setItem("nexus_db", JSON.stringify(productsDB));
+        }
+
         let bag = JSON.parse(localStorage.getItem("nexus_bag")) || [];
 
         function renderProducts(data = productsDB) {
             const list = document.getElementById("product-list");
             if (data.length === 0) {
-                list.innerHTML = `<div class="py-32 text-center opacity-10"><p class="font-heavy italic uppercase text-3xl">Vazio</p></div>`;
+                list.innerHTML = `<div class="col-span-full py-32 text-center opacity-10"><p class="font-heavy italic uppercase text-3xl">Vazio</p></div>`;
                 return;
             }
-            list.innerHTML = data.map((p, index) => `
+            list.innerHTML = data.map((p) => {
+                // CORREÇÃO: Pega o index real de productsDB para que a busca filtre mas adicione o item certo
+                const originalIndex = productsDB.indexOf(p);
+                return `
                 <div class="product-card" data-aos="fade-up">
                     <div class="aspect-square bg-zinc-950 border border-zinc-900 rounded-[2.5rem] overflow-hidden mb-6">
                         <img src="${p.image}" class="w-full h-full object-cover">
@@ -125,26 +162,39 @@
                         <div><h3 class="text-2xl font-heavy italic uppercase mb-1 leading-none">${p.name}</h3><p class="text-zinc-500 text-[9px] uppercase font-bold tracking-widest">${p.desc}</p></div>
                         <span class="text-xl font-black text-red-700 whitespace-nowrap">${p.price} MT</span>
                     </div>
-                    <button onclick="addToBag(${index})" class="w-full bg-white text-black font-black py-5 rounded-2xl text-[9px] uppercase hover:bg-red-800 hover:text-white transition-all">Adicionar à Bag</button>
-                </div>`).join("");
+                    <button onclick="addToBag(${originalIndex})" class="w-full bg-white text-black font-black py-5 rounded-2xl text-[9px] uppercase hover:bg-red-800 hover:text-white transition-all">Adicionar à Bag</button>
+                </div>`;
+            }).join("");
+
+            // CORREÇÃO: Atualiza o AOS para animar os novos elementos injetados via JS
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
         }
 
         function addToBag(index) {
-            bag.push(productsDB[index]);
-            localStorage.setItem("nexus_bag", JSON.stringify(bag));
-            document.getElementById("cart-dot").classList.remove("hidden");
-            updateCartUI();
+            if (productsDB[index]) {
+                bag.push(productsDB[index]);
+                localStorage.setItem("nexus_bag", JSON.stringify(bag));
+                document.getElementById("cart-dot").classList.remove("hidden");
+                updateCartUI();
+            }
         }
 
         function toggleCart() {
             const modal = document.getElementById("modal-cart");
-            modal.style.display = (modal.style.display === "flex") ? "none" : "flex";
+            // CORREÇÃO: Estruturação consistente para exibição/ocultação do modal
+            const isHidden = modal.style.display === "none" || modal.style.display === "";
+            modal.style.display = isHidden ? "flex" : "none";
             updateCartUI();
         }
 
         function updateCartUI() {
             const container = document.getElementById("cartItems");
-            if (bag.length === 0) { container.innerHTML = `<p class="text-center py-6 text-zinc-700 text-[9px] font-black uppercase">Sua bag está vazia</p>`; return; }
+            if (bag.length === 0) { 
+                container.innerHTML = `<p class="text-center py-6 text-zinc-700 text-[9px] font-black uppercase">Sua bag está vazia</p>`; 
+                return; 
+            }
             container.innerHTML = bag.map((item, i) => `
                 <div class="flex justify-between items-center bg-zinc-900/20 p-4 rounded-2xl border border-white/5">
                     <div><p class="font-black text-white uppercase text-[9px]">${item.name}</p><p class="text-red-700 font-black text-[10px]">${item.price} MT</p></div>
@@ -170,25 +220,28 @@
             const loc = document.getElementById("location").value;
 
             if (bag.length === 0) { alert("Sua bag está vazia!"); return; }
-            if (!phone || phone.length < 5) { alert("Insira o seu contacto."); return; }
+            if (!phone || phone.trim().length < 5) { alert("Insira o seu contacto."); return; }
 
-            let msg = `PEDIDO - NEXUS SIVE%0A`;
-            msg += `_______________________________%0A%0A`;
+            let msg = `PEDIDO - NEXUS SIVE\n`;
+            msg += `_______________________________\n\n`;
             
             let total = 0;
             bag.forEach((item, i) => {
-                msg += `${i + 1}. ${item.name.toUpperCase()} - ${item.price} MT%0A`;
-                const numericPrice = parseFloat(item.price.toString().replace(/[^0-9.]/g, '')) || 0;
+                msg += `${i + 1}. ${item.name.toUpperCase()} - ${item.price} MT\n`;
+                // CORREÇÃO: Expressão regular robusta para extração de preços
+                const numericPrice = parseFloat(item.price.toString().replace(/\D/g, '')) || 0;
                 total += numericPrice;
             });
 
-            msg += `_______________________________%0A%0A`;
-            msg += `TOTAL: ${total} MT%0A`;
-            msg += `BAIRRO: ${loc.toUpperCase()}%0A`;
-            msg += `CONTACTO: ${phone}%0A%0A`;
+            msg += `_______________________________\n\n`;
+            msg += `TOTAL: ${total} MT\n`;
+            msg += `BAIRRO: ${loc.toUpperCase()}\n`;
+            msg += `CONTACTO: ${phone}\n\n`;
             msg += `_Enviado pelo Marketplace Nexus_`;
 
-            window.location.href = `https://wa.me/258879151175?text=${msg}`;
+            // CORREÇÃO: Codifica de forma segura para URL e abre em nova aba/aplicativo externo
+            const whatsappUrl = `https://wa.me/258879151175?text=${encodeURIComponent(msg)}`;
+            window.open(whatsappUrl, '_blank');
         }
 
         function startIntro() {
@@ -201,7 +254,11 @@
             }, 50);
         }
 
-        window.onload = () => { startIntro(); renderProducts(); if(bag.length > 0) document.getElementById("cart-dot").classList.remove("hidden"); };
+        window.onload = () => { 
+            startIntro(); 
+            renderProducts(); 
+            if(bag.length > 0) document.getElementById("cart-dot").classList.remove("hidden"); 
+        };
     </script>
 </body>
 </html>
