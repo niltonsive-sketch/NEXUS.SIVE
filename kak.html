@@ -1,22 +1,725 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-pt">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>HTML</title>
-  
-  <!-- HTML -->
-  
-
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS SIVE | OWNER OF THE ROAD</title>
+    <meta name="description" content="Nexus Sive — Small details, big differences. Streetwear de Moçambique para o Mundo.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        /* ── RESET & BASE ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #000; color: #fcfcfc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-heavy { font-family: 'Archivo Black', sans-serif; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #080808; }
+        ::-webkit-scrollbar-thumb { background: #8B0000; border-radius: 10px; }
+        /* ── NOISE ── */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 9999; opacity: 0.35;
+        }
+        /* ── AMBIENT ORBS ── */
+        .orb {
+            position: fixed; border-radius: 50%; filter: blur(130px);
+            pointer-events: none; z-index: 0;
+        }
+        .orb-1 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(139,0,0,0.12) 0%, transparent 70%); top: -200px; left: -200px; }
+        .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(100,0,0,0.09) 0%, transparent 70%); bottom: 0; right: -100px; }
+        /* ── INTRO OVERLAY ── */
+        #intro-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 7000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 1.2s ease, visibility 1.2s ease;
+        }
+        #intro-overlay.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+        #intro-overlay img {
+            width: 90px; margin-bottom: 24px;
+            filter: drop-shadow(0 0 30px rgba(139,0,0,0.5));
+            animation: pulse-logo 2s ease-in-out infinite;
+        }
+        @keyframes pulse-logo {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.04); }
+        }
+        #typewriter {
+            font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase;
+            color: #333; font-style: italic; min-height: 14px;
+        }
+        .intro-bar {
+            width: 0; height: 1px; margin-top: 20px;
+            background: linear-gradient(90deg, transparent, #8B0000, transparent);
+            animation: bar-grow 2s ease 0.5s forwards;
+        }
+        @keyframes bar-grow { to { width: 180px; } }
+        /* ── HEADER ── */
+        header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1.5rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: all 0.3s ease;
+        }
+        /* BRAND LOGO */
+        .brand-logo { cursor: pointer; line-height: 0.85; }
+        .brand-logo h1 { font-family: 'Archivo Black', sans-serif; letter-spacing: -0.03em; transition: filter 0.4s; }
+        .brand-logo:hover h1 { filter: drop-shadow(0 0 8px rgba(255,255,255,0.5)); }
+        .brand-nexus { color: #fff; font-size: clamp(1.2rem, 3vw, 1.6rem); display: block; transition: color 0.4s; }
+        .brand-sive  { color: #FF0B0B; font-size: clamp(0.9rem, 2.2vw, 1.2rem); display: block; transition: color 0.4s, text-shadow 0.4s; }
+        .brand-logo:hover .brand-nexus { color: #8B0000; text-shadow: 2px 2px 10px rgba(139,0,0,0.5); }
+        .brand-logo:hover .brand-sive  { color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.8); }
+        /* BAG ICON BUTTON */
+        #header-bag-btn {
+            position: relative; background: none; border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px; padding: 8px 20px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase;
+            color: rgba(255,255,255,0.6); transition: all 0.3s ease;
+        }
+        #header-bag-btn:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+        #header-bag-count {
+            background: #8B0000; color: #fff; font-size: 7px; font-weight: 900;
+            width: 16px; height: 16px; border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+        }
+        /* ── HERO ── */
+        .hero {
+            min-height: 100svh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            padding: 6rem 1.5rem 4rem; position: relative; z-index: 10;
+        }
+        .hero-tag {
+            font-size: 8px; font-weight: 900; letter-spacing: 1em; text-transform: uppercase;
+            color: #2a2a2a; margin-bottom: 2.5rem;
+        }
+        .hero-title-main {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(4rem, 14vw, 120px);
+            line-height: 0.82; letter-spacing: -0.03em; font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+        .hero-title-sub {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2rem, 7vw, 60px);
+            line-height: 1; letter-spacing: 0.08em; font-style: italic;
+            color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.5);
+            text-transform: uppercase;
+        }
+        .hero-buttons { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; margin-top: 3rem; }
+        .btn-hero {
+            width: 220px; padding: 13px 0; border-radius: 999px;
+            font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase;
+            text-align: center; text-decoration: none; display: block;
+            transition: all 0.3s ease;
+        }
+        .btn-hero-white { background: #fff; color: #000; }
+        .btn-hero-white:hover { background: #e0e0e0; transform: scale(1.04); }
+        .btn-hero-green { background: #128C7E; color: #fff; }
+        .btn-hero-green:hover { background: #0f7268; transform: scale(1.04); }
+        .scroll-arrow {
+            position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%,20%,50%,80%,100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+        /* ── TICKER ── */
+        .ticker-section {
+            border-top: 1px solid #111; border-bottom: 1px solid #111;
+            padding: 1.5rem 0; overflow: hidden; position: relative; z-index: 10;
+        }
+        /* ── PRODUCTS STRIP ── */
+        .products-section { padding: 5rem 1.5rem; position: relative; z-index: 10; }
+        .section-label {
+            font-size: 8px; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase;
+            color: #8B0000; margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.8rem);
+            font-style: italic; text-transform: uppercase; letter-spacing: -0.02em;
+            margin-bottom: 3rem;
+        }
+        .product-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media (min-width: 640px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 960px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+        .product-item { position: relative; cursor: pointer; }
+        .product-img-wrap {
+            aspect-ratio: 4/5; border-radius: 2rem; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: #0a0a0a; margin-bottom: 1rem;
+            transition: border-color 0.4s ease;
+        }
+        .product-item:hover .product-img-wrap { border-color: rgba(139,0,0,0.4); }
+        .product-img-wrap img {
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.85; transition: opacity 0.4s ease, transform 0.5s ease;
+        }
+        .product-item:hover .product-img-wrap img { opacity: 1; transform: scale(1.04); }
+        .product-info { display: flex; justify-content: space-between; align-items: baseline; padding: 0 0.25rem; }
+        .product-name { font-family: 'Archivo Black', sans-serif; font-size: 0.85rem; font-style: italic; text-transform: uppercase; }
+        .product-price { font-size: 0.85rem; font-weight: 900; color: #FF0B0B; }
+        .product-view-all {
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 3rem; font-size: 8px; font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase;
+            color: rgba(255,255,255,0.4); text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.1); padding: 10px 24px; border-radius: 999px;
+            transition: all 0.3s ease;
+        }
+        .product-view-all:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+        /* ── FAQ ── */
+        .faq-section { padding: 5rem 1.5rem; position: relative; z-index: 10; border-top: 1px solid #111; }
+        .faq-card {
+            background: #000; border: 1px solid #1a1a1a; border-radius: 2.5rem;
+            margin-bottom: 1rem; overflow: hidden; transition: border-color 0.3s ease;
+        }
+        .faq-card:hover { border-color: rgba(139,0,0,0.5); }
+        details summary::-webkit-details-marker { display: none; }
+        .faq-summary {
+            padding: 1.8rem 2rem; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; list-style: none;
+            font-family: 'Archivo Black', sans-serif; text-transform: uppercase;
+            font-size: clamp(0.85rem, 2.5vw, 1.3rem); font-style: italic;
+        }
+        .faq-icon { color: #FF0B0B; font-size: 1.3rem; flex-shrink: 0; transition: transform 0.3s ease; }
+        details[open] .faq-icon { transform: rotate(45deg); }
+        .faq-body { padding: 0 2rem 1.8rem; color: #555; font-size: 0.85rem; line-height: 1.7; }
+        /* ── TESTIMONIALS ── */
+        .testimonials-section { padding: 5rem 1.5rem; position: relative; z-index: 10; border-top: 1px solid #111; }
+        .testimonials-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2.5rem; }
+        @media (min-width: 640px) { .testimonials-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 960px) { .testimonials-grid { grid-template-columns: repeat(3, 1fr); } }
+        .testimonial-card {
+            padding: 2rem; border: 1px solid #1a1a1a; border-radius: 2.5rem;
+            background: #000; text-align: left;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .testimonial-card:hover { border-color: rgba(139,0,0,0.3); transform: translateY(-3px); }
+        .testimonial-text { font-size: 0.82rem; color: #555; font-style: italic; margin-bottom: 1rem; line-height: 1.6; }
+        .testimonial-handle { font-family: 'Archivo Black', sans-serif; font-size: 8px; color: #FF0B0B; letter-spacing: 0.2em; text-transform: uppercase; }
+        .btn-feedback {
+            padding: 0.9rem 2.5rem; background: #fff; color: #000;
+            font-family: 'Archivo Black', sans-serif; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+            border-radius: 999px; border: none; cursor: pointer; transition: all 0.3s ease;
+        }
+        .btn-feedback:hover { background: #FF0B0B; color: #fff; transform: scale(1.05); }
+        /* ── FOOTER ── */
+        footer { padding: 6rem 1.5rem; text-align: center; border-top: 1px solid #111; position: relative; z-index: 10; }
+        .footer-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2.5rem, 10vw, 7rem);
+            font-style: italic; letter-spacing: -0.03em; color: #FF0B0B; line-height: 1;
+        }
+        .footer-copy {
+            font-size: 7px; font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase;
+            color: #1a1a1a; margin-top: 3rem;
+        }
+        /* ── FEEDBACK POPUP ── */
+        #feedback-popup {
+            display: none; position: fixed; inset: 0; z-index: 8000;
+            background: rgba(0,0,0,0.88); backdrop-filter: blur(20px);
+            align-items: center; justify-content: center; padding: 1rem;
+        }
+        .feedback-panel {
+            background: #060606; border: 1px solid #1f1f1f;
+            width: 100%; max-width: 440px; padding: 2.5rem; border-radius: 2.5rem;
+            position: relative; animation: panel-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes panel-in {
+            from { opacity: 0; transform: scale(0.94) translateY(20px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .feedback-close {
+            position: absolute; top: 1.2rem; right: 1.5rem;
+            background: none; border: none; color: #444; font-size: 1.2rem; cursor: pointer;
+            transition: color 0.2s;
+        }
+        .feedback-close:hover { color: #fff; }
+        .feedback-title {
+            font-family: 'Archivo Black', sans-serif; font-size: 1.4rem; font-style: italic;
+            color: #FF0B0B; text-transform: uppercase; text-align: center; margin-bottom: 1.5rem;
+        }
+        .feedback-input {
+            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            color: #fff; padding: 0.9rem 1.1rem; border-radius: 1rem; font-size: 13px;
+            outline: none; transition: border-color 0.3s ease; margin-bottom: 0.7rem;
+        }
+        .feedback-input:focus { border-color: rgba(139,0,0,0.5); }
+        .feedback-input::placeholder { color: rgba(255,255,255,0.2); }
+        textarea.feedback-input { height: 100px; resize: none; }
+        .btn-send-feedback {
+            width: 100%; padding: 1rem; background: #8B0000; color: #fff;
+            font-family: 'Archivo Black', sans-serif; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+            border: none; border-radius: 1rem; cursor: pointer; transition: background 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        .btn-send-feedback:hover { background: #c0392b; }
+        /* ── EMPTY STATE ── */
+        .empty-block { padding: 4rem; text-align: center; opacity: 0.08; }
+        .empty-block p { font-family: 'Archivo Black', sans-serif; font-size: 1.5rem; font-style: italic; text-transform: uppercase; }
+        /* ── ADMIN MODAL ── */
+        #admin-modal {
+            display: none; position: fixed; inset: 0; z-index: 9000;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(24px);
+            align-items: center; justify-content: center; padding: 1rem;
+        }
+        .admin-panel {
+            background: #060606;
+            border: 1px solid rgba(139,0,0,0.25);
+            width: 100%; max-width: 380px;
+            border-radius: 2.5rem; padding: 2.5rem 2rem;
+            position: relative;
+            animation: panel-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 0 60px rgba(139,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.03) inset;
+        }
+        .admin-panel::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139,0,0,0.7), transparent);
+        }
+        .admin-close {
+            position: absolute; top: 1.2rem; right: 1.4rem;
+            background: none; border: none; color: #333; font-size: 1.1rem;
+            cursor: pointer; transition: color 0.2s;
+        }
+        .admin-close:hover { color: #fff; }
+        .admin-logo-hint {
+            text-align: center; margin-bottom: 1.8rem;
+        }
+        .admin-logo-hint svg { display: inline-block; opacity: 0.15; }
+        .admin-title {
+            font-family: 'Archivo Black', sans-serif; font-size: 1.1rem;
+            font-style: italic; text-transform: uppercase; letter-spacing: -0.01em;
+            text-align: center; margin-bottom: 1.5rem; color: #fff;
+        }
+        .admin-title span { color: #8B0000; }
+        .admin-input {
+            width: 100%; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07); color: #fff;
+            padding: 0.85rem 1.1rem; border-radius: 0.9rem;
+            font-size: 12px; font-weight: 700; text-align: center;
+            outline: none; transition: border-color 0.3s ease;
+            margin-bottom: 0.6rem; letter-spacing: 0.05em;
+        }
+        .admin-input:focus { border-color: rgba(139,0,0,0.5); }
+        .admin-input::placeholder { color: rgba(255,255,255,0.18); font-weight: 400; }
+        .admin-shake { animation: shake 0.4s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%      { transform: translateX(-8px); }
+            40%      { transform: translateX(8px); }
+            60%      { transform: translateX(-5px); }
+            80%      { transform: translateX(5px); }
+        }
+        .btn-admin-enter {
+            width: 100%; padding: 0.95rem;
+            background: linear-gradient(135deg, #8B0000, #c0392b);
+            color: #fff; font-family: 'Archivo Black', sans-serif;
+            font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase;
+            border: none; border-radius: 0.9rem; cursor: pointer;
+            transition: all 0.3s ease; margin-top: 0.4rem;
+            box-shadow: 0 4px 20px rgba(139,0,0,0.3);
+        }
+        .btn-admin-enter:hover { box-shadow: 0 6px 28px rgba(139,0,0,0.5); transform: translateY(-1px); }
+        .admin-tap-counter {
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+            font-size: 7px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase;
+            color: rgba(139,0,0,0.6); pointer-events: none; z-index: 500;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+    </style>
 </head>
-
 <body>
-  <p>Nothing to see here...</p>
-  <!-- Project -->
-  <script src="main.js"></script>
+    <!-- AMBIENT -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <!-- INTRO -->
+    <div id="intro-overlay">
+        <img src="ei_1776150431404-removebg-preview.png" alt="NEXUS SIVE">
+        <div class="intro-bar"></div>
+        <p id="typewriter"></p>
+    </div>
+    <!-- HEADER -->
+    <header id="site-header">
+        <a href="#" id="brand-logo-tap" class="brand-logo" aria-label="NEXUS SIVE Home">
+            <h1>
+                <span class="brand-nexus">NEXUS</span>
+                <span class="brand-sive">SIVE</span>
+            </h1>
+        </a>
+        <button id="header-bag-btn" onclick="openBagModal()" aria-label="Abrir bag">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            Bag
+            <span id="header-bag-count">0</span>
+        </button>
+    </header>
+    <!-- HERO -->
+    <section class="hero">
+        <p class="hero-tag" data-aos="fade-down">From Moz 2 The World // 2026</p>
+        <div data-aos="zoom-out" data-aos-delay="100">
+            <h2 class="hero-title-main">NEXUS</h2>
+            <p class="hero-title-sub">#STREETW€AR</p>
+        </div>
+        <div class="hero-buttons" data-aos="fade-up" data-aos-delay="200">
+            <a href="marketplace.html" class="btn-hero btn-hero-white">MARKETPLACE</a>
+            <a href="https://wa.me/258879151175" target="_blank" rel="noopener" class="btn-hero btn-hero-green">WHATSAPP</a>
+        </div>
+        <div class="scroll-arrow" aria-hidden="true">
+            <svg width="28" height="28" fill="none" stroke="#4a0000" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
+    </section>
+    <!-- TICKER -->
+    <div class="ticker-section">
+        <div data-aos="fade-right" data-aos-duration="1500" class="px-8 md:px-16">
+            <h3 class="font-heavy text-2xl md:text-4xl uppercase italic">
+                Alguns produtos <span style="color:#8B0000;text-decoration:underline;text-underline-offset:8px;">que tens de ver</span>
+            </h3>
+        </div>
+    </div>
+    <!-- PRODUCTS -->
+    <section class="products-section">
+        <div class="max-w-5xl mx-auto">
+            <p class="section-label">Latest Drops</p>
+            <h3 class="section-title" data-aos="fade-right">Novos Artigos</h3>
+            <div id="home-products-list" class="product-grid"></div>
+            <div style="text-align:center;">
+                <a href="marketplace.html" class="product-view-all" data-aos="fade-up">
+                    Ver Tudo
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- FAQ -->
+    <section class="faq-section">
+        <div class="max-w-3xl mx-auto">
+            <p class="section-label" style="text-align:center;">Dúvidas</p>
+            <h3 class="section-title" style="text-align:center;" data-aos="fade-down">
+                PERGUNTAS <span style="color:#FF0B0B;">FREQUENTES</span>
+            </h3>
+            <div>
+                <details class="faq-card" data-aos="fade-right">
+                    <summary class="faq-summary">
+                        Como funcionam as entregas?
+                        <span class="faq-icon">＋</span>
+                    </summary>
+                    <p class="faq-body">Entregamos em toda a Cidade de Maputo e Matola em até 48h úteis. Entrega feita por via directa ou através de parceiro de confiança.</p>
+                </details>
+                <details class="faq-card" data-aos="fade-left">
+                    <summary class="faq-summary">
+                        Quais os métodos de pagamento?
+                        <span class="faq-icon">＋</span>
+                    </summary>
+                    <p class="faq-body">Aceitamos M-Pesa, E-Mola e Transferência Bancária. Pagamento confirmado antes do envio.</p>
+                </details>
+                <details class="faq-card" data-aos="fade-right">
+                    <summary class="faq-summary">
+                        Onde fica a loja física?
+                        <span class="faq-icon">＋</span>
+                    </summary>
+                    <p class="faq-body">Operamos 100% online. Sem loja física — sem overhead, preços justos para ti.</p>
+                </details>
+                <details class="faq-card" data-aos="fade-left">
+                    <summary class="faq-summary">
+                        Posso devolver um artigo?
+                        <span class="faq-icon">＋</span>
+                    </summary>
+                    <p class="faq-body">Sim, aceitamos trocas em caso de defeito de fábrica. Fala connosco via WhatsApp nas primeiras 24h após recepção.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+    <!-- TESTIMONIALS -->
+    <section class="testimonials-section">
+        <div class="max-w-5xl mx-auto">
+            <p class="section-label" style="text-align:center;">Comunidade</p>
+            <h3 class="section-title" style="text-align:center;" data-aos="fade-up">
+                VOZ DAS <span style="color:#FF0B0B;">RUAS</span>
+            </h3>
+            <div id="testimonials-list" class="testimonials-grid"></div>
+            <div style="text-align:center;" data-aos="zoom-in">
+                <button class="btn-feedback" onclick="openFeedback()">Drop Your Voice</button>
+            </div>
+        </div>
+    </section>
+    <!-- FOOTER -->
+    <footer>
+        <div data-aos="zoom-in">
+            <h2 class="footer-title">#OWNER OF THE ROAD</h2>
+            <p class="footer-copy">NEXUS SIVE AUTHORITY ©️ 2026</p>
+        </div>
+    </footer>
+    <!-- FEEDBACK POPUP -->
+    <div id="feedback-popup" role="dialog" aria-modal="true" aria-label="Enviar Feedback">
+        <div class="feedback-panel">
+            <button class="feedback-close" onclick="closeFeedback()" aria-label="Fechar">✕</button>
+            <h4 class="feedback-title">Drop Your Voice</h4>
+            <input id="fb-user" type="text" placeholder="Instagram (ex: @street_boss)" class="feedback-input">
+            <textarea id="fb-msg" placeholder="A tua mensagem para as ruas..." class="feedback-input"></textarea>
+            <button class="btn-send-feedback" onclick="sendFeedback()">Enviar</button>
+        </div>
+    </div>
+    <!-- BAG MODAL (simplificado para a homepage) -->
+    <div id="bag-modal" style="display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,0.88);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:1rem;">
+        <div style="background:#060606;border:1px solid #1f1f1f;width:100%;max-width:420px;border-radius:2.5rem;padding:2rem;position:relative;animation:panel-in 0.35s cubic-bezier(0.34,1.56,0.64,1);">
+            <button onclick="closeBagModal()" style="position:absolute;top:1.2rem;right:1.5rem;background:none;border:none;color:#444;font-size:1.2rem;cursor:pointer;">✕</button>
+            <h4 style="font-family:'Archivo Black',sans-serif;font-size:1.3rem;font-style:italic;text-transform:uppercase;margin-bottom:1.5rem;">Sua Bag</h4>
+            <div id="bag-modal-items" style="max-height:220px;overflow-y:auto;margin-bottom:1.2rem;display:flex;flex-direction:column;gap:0.5rem;"></div>
+            <a href="marketplace.html" style="display:block;width:100%;padding:1rem;background:#8B0000;color:#fff;font-family:'Archivo Black',sans-serif;font-size:8px;letter-spacing:0.25em;text-transform:uppercase;border-radius:1rem;text-align:center;text-decoration:none;transition:background 0.3s;" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#8B0000'">
+                Finalizar no Marketplace
+            </a>
+        </div>
+    </div>
+    <!-- ADMIN TAP COUNTER HINT -->
+    <div id="admin-tap-counter" class="admin-tap-counter"></div>
+    <!-- ADMIN MODAL -->
+    <div id="admin-modal" role="dialog" aria-modal="true" aria-label="Acesso Restrito">
+        <div class="admin-panel">
+            <button class="admin-close" onclick="closeAdmin()" aria-label="Fechar">✕</button>
+            <div class="admin-logo-hint">
+                <svg width="32" height="32" fill="none" stroke="#8B0000" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h4 class="admin-title">Acesso <span>Restrito</span></h4>
+            <input id="admin-user" type="tel" placeholder="Número" class="admin-input" autocomplete="off">
+            <input id="admin-pass" type="password" placeholder="Password" class="admin-input" autocomplete="new-password">
+            <button class="btn-admin-enter" onclick="checkAdmin()">Entrar no Painel</button>
+        </div>
+    </div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        /* ═══════════════════════════════════════════
+           AOS INIT
+        ═══════════════════════════════════════════ */
+        AOS.init({ duration: 900, once: false, mirror: true, offset: 60 });
+        /* ═══════════════════════════════════════════
+           INTRO TYPEWRITER
+        ═══════════════════════════════════════════ */
+        function startIntro() {
+            const slogan = "Small details, big differences.";
+            let i = 0;
+            const el = document.getElementById("typewriter");
+            const timer = setInterval(() => {
+                if (i < slogan.length) {
+                    el.textContent += slogan.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(timer);
+                    setTimeout(() => {
+                        document.getElementById("intro-overlay").classList.add("hide");
+                    }, 1400);
+                }
+            }, 50);
+        }
+        /* ═══════════════════════════════════════════
+           PRODUCTS — puxa do localStorage (nexus_db)
+        ═══════════════════════════════════════════ */
+        function loadProducts() {
+            const container = document.getElementById("home-products-list");
+            const db = JSON.parse(localStorage.getItem("nexus_db")) || [];
+            const items = db.slice(0, 3);
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-block" style="grid-column:1/-1;">
+                        <p>No Drops Yet</p>
+                    </div>`;
+                return;
+            }
+            container.innerHTML = items.map(p => `
+                <div class="product-item" data-aos="fade-up">
+                    <div class="product-img-wrap">
+                        <img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}" loading="lazy">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-name">${escapeHTML(p.name)}</span>
+                        <span class="product-price">${escapeHTML(p.price)} MT</span>
+                    </div>
+                </div>
+            `).join("");
+            AOS.refresh();
+        }
+        /* ═══════════════════════════════════════════
+           TESTIMONIALS — puxa do localStorage (nexus_feedback)
+        ═══════════════════════════════════════════ */
+        // Defaults sempre visíveis enquanto não há feedback real
+        const defaultTestimonials = [
+            { user: "STREET_BOSS",  message: "Qualidade internacional em Maputo." },
+            { user: "DOPEMAN_258",  message: "Pack de luxo e entrega rápida." },
+            { user: "NEXUS_FAN",    message: "A autoridade do streetwear local." }
+        ];
+        function loadTestimonials() {
+            const container = document.getElementById("testimonials-list");
+            const saved = JSON.parse(localStorage.getItem("nexus_feedback")) || [];
+            const all = [...defaultTestimonials, ...saved];
+            container.innerHTML = all.map((f, idx) => `
+                <div class="testimonial-card" data-aos="flip-left" data-aos-delay="${(idx % 3) * 150}">
+                    <p class="testimonial-text">"${escapeHTML(f.message)}"</p>
+                    <p class="testimonial-handle">@${escapeHTML(f.user)}</p>
+                </div>
+            `).join("");
+            AOS.refresh();
+        }
+        /* ═══════════════════════════════════════════
+           FEEDBACK POPUP
+        ═══════════════════════════════════════════ */
+        function openFeedback() {
+            document.getElementById("feedback-popup").style.display = "flex";
+        }
+        function closeFeedback() {
+            document.getElementById("feedback-popup").style.display = "none";
+            document.getElementById("fb-user").value = "";
+            document.getElementById("fb-msg").value = "";
+        }
+        function sendFeedback() {
+            const user    = document.getElementById("fb-user").value.trim().replace(/^@/, "");
+            const message = document.getElementById("fb-msg").value.trim();
+            if (!user || !message) { alert("Preenche os dois campos!"); return; }
+            const db = JSON.parse(localStorage.getItem("nexus_feedback")) || [];
+            db.push({ user, message });
+            localStorage.setItem("nexus_feedback", JSON.stringify(db));
+            closeFeedback();
+            loadTestimonials();
+        }
+        /* ═══════════════════════════════════════════
+           BAG MODAL (homepage — só mostra items)
+        ═══════════════════════════════════════════ */
+        function openBagModal() {
+            const bag = JSON.parse(localStorage.getItem("nexus_bag")) || [];
+            const modal = document.getElementById("bag-modal");
+            const itemsEl = document.getElementById("bag-modal-items");
+            const countEl = document.getElementById("header-bag-count");
+            if (bag.length === 0) {
+                itemsEl.innerHTML = `<p style="color:#333;font-size:8px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;text-align:center;padding:2rem 0;">Bag vazia</p>`;
+            } else {
+                itemsEl.innerHTML = bag.map(item => `
+                    <div style="display:flex;justify-content:space-between;padding:0.7rem 0.5rem;border-bottom:1px solid #111;">
+                        <span style="font-size:10px;font-weight:700;text-transform:uppercase;">${escapeHTML(item.name)}</span>
+                        <span style="font-size:10px;font-weight:900;color:#FF0B0B;">${escapeHTML(item.price)} MT</span>
+                    </div>
+                `).join("");
+                countEl.textContent = bag.length;
+                countEl.style.display = "flex";
+            }
+            modal.style.display = "flex";
+        }
+        function closeBagModal() {
+            document.getElementById("bag-modal").style.display = "none";
+        }
+        /* ═══════════════════════════════════════════
+           HEADER BAG COUNT (ao carregar)
+        ═══════════════════════════════════════════ */
+        function updateHeaderBag() {
+            const bag = JSON.parse(localStorage.getItem("nexus_bag")) || [];
+            const countEl = document.getElementById("header-bag-count");
+            if (bag.length > 0) {
+                countEl.textContent = bag.length;
+                countEl.style.display = "flex";
+            }
+        }
+        /* ═══════════════════════════════════════════
+           SECURITY — escapeHTML para evitar XSS
+        ═══════════════════════════════════════════ */
+        function escapeHTML(str) {
+            const div = document.createElement("div");
+            div.textContent = String(str ?? "");
+            return div.innerHTML;
+        }
+        /* ═══════════════════════════════════════════
+           FECHAR MODAIS AO CLICAR NO BACKDROP
+        ═══════════════════════════════════════════ */
+        document.getElementById("feedback-popup").addEventListener("click", function(e) {
+            if (e.target === this) closeFeedback();
+        });
+        document.getElementById("bag-modal").addEventListener("click", function(e) {
+            if (e.target === this) closeBagModal();
+        });
+        document.getElementById("admin-modal").addEventListener("click", function(e) {
+            if (e.target === this) closeAdmin();
+        });
+        /* ═══════════════════════════════════════════
+           ADMIN — 15 TAPS NA LOGO
+        ═══════════════════════════════════════════ */
+        let tapCount = 0;
+        let tapTimer = null;
+        const TAP_GOAL = 15;
+        const tapHint  = document.getElementById("admin-tap-counter");
+        document.getElementById("brand-logo-tap").addEventListener("click", function(e) {
+            e.preventDefault();
+            tapCount++;
+            // Mostrar hint subtil após o 5º toque
+            if (tapCount >= 5) {
+                tapHint.textContent = `${tapCount} / ${TAP_GOAL}`;
+                tapHint.style.opacity = "1";
+            }
+            if (tapCount >= TAP_GOAL) {
+                tapCount = 0;
+                tapHint.style.opacity = "0";
+                clearTimeout(tapTimer);
+                openAdmin();
+                return;
+            }
+            // Reset se parar de clicar por 2s
+            clearTimeout(tapTimer);
+            tapTimer = setTimeout(() => {
+                tapCount = 0;
+                tapHint.style.opacity = "0";
+            }, 2000);
+        });
+        function openAdmin() {
+            document.getElementById("admin-modal").style.display = "flex";
+            setTimeout(() => document.getElementById("admin-user").focus(), 100);
+        }
+        function closeAdmin() {
+            document.getElementById("admin-modal").style.display = "none";
+            document.getElementById("admin-user").value = "";
+            document.getElementById("admin-pass").value = "";
+        }
+        function checkAdmin() {
+            const user = document.getElementById("admin-user").value.trim();
+            const pass = document.getElementById("admin-pass").value;
+            const panel = document.querySelector(".admin-panel");
+            // Credenciais guardadas em atob para não ficarem em texto puro
+            const validUser = atob("ODc5MTUxMTc1");   // 879151175
+            const validPass = atob("TiFsdG9uc2l2ZSQ="); // N!ltonsive$
+            if (user === validUser && pass === validPass) {
+                window.location.href = "niltonsive.html";
+            } else {
+                panel.classList.remove("admin-shake");
+                void panel.offsetWidth; // reflow para reiniciar animação
+                panel.classList.add("admin-shake");
+                document.getElementById("admin-pass").value = "";
+                document.getElementById("admin-pass").focus();
+            }
+        }
+        // Enter no input para submeter
+        document.getElementById("admin-pass") && document.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && document.getElementById("admin-modal").style.display === "flex") {
+                checkAdmin();
+            }
+        });
+        /* ═══════════════════════════════════════════
+           INIT
+        ═══════════════════════════════════════════ */
+        window.addEventListener("load", () => {
+            startIntro();
+            loadProducts();
+            loadTestimonials();
+            updateHeaderBag();
+        });
+    </script>
 </body>
 </html>
