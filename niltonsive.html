@@ -5,171 +5,623 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADMIN | NEXUS SIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;900&display=swap');
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; padding-bottom: 120px; overflow-x: hidden; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #020202; color: #fff; font-family: 'Inter', sans-serif; padding-bottom: 120px; overflow-x: hidden; min-height: 100vh; }
         .font-heavy { font-family: 'Archivo Black', sans-serif; }
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #8B0000; border-radius: 10px; }
+        /* noise */
+        body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9998; opacity: 0.4; }
+        /* ── HEADER ── */
+        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background: rgba(2,2,2,0.9); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .site-header img { width: 52px; }
+        .header-badge { font-size: 7px; font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase; color: #8B0000; background: rgba(139,0,0,0.1); border: 1px solid rgba(139,0,0,0.3); padding: 4px 12px; border-radius: 999px; }
+        /* ── VIEWS ── */
+        .view { display: none; padding: 90px 1.2rem 2rem; max-width: 700px; margin: 0 auto; }
+        .view.active { display: block; }
+        /* ── SECTION TITLES ── */
+        .view-title { font-family: 'Archivo Black', sans-serif; font-size: clamp(1.4rem, 4vw, 2rem); font-style: italic; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+        .view-title span { color: #8B0000; }
+        /* ── INPUT ── */
+        .input-admin {
+            width: 100%; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07); color: #fff;
+            padding: 0.9rem 1rem; border-radius: 0.85rem;
+            font-size: 12px; font-weight: 600; outline: none;
+            transition: border-color 0.3s ease, background 0.3s ease;
+            margin-bottom: 0.7rem;
+        }
+        .input-admin:focus { border-color: rgba(139,0,0,0.5); background: rgba(139,0,0,0.03); }
+        .input-admin::placeholder { color: rgba(255,255,255,0.18); }
+        textarea.input-admin { height: 80px; resize: none; }
+        select.input-admin { appearance: none; }
+        /* ── FIELD LABEL ── */
+        .f-label { font-size: 7px; font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 6px; display: block; }
+        /* ── IMAGE DROPZONE ── */
+        .drop-zone {
+            width: 100%; height: 160px; border: 1.5px dashed rgba(255,255,255,0.1);
+            border-radius: 1.2rem; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; background: rgba(255,255,255,0.02);
+            transition: all 0.3s ease; margin-bottom: 1rem; position: relative; overflow: hidden;
+        }
+        .drop-zone:hover { border-color: rgba(139,0,0,0.4); background: rgba(139,0,0,0.03); }
+        .drop-zone.loaded { border-color: rgba(139,0,0,0.5); }
+        .drop-zone img.preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 1.2rem; opacity: 0.7; }
+        .drop-zone-text { font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); text-align: center; position: relative; z-index: 1; }
+        /* ── SIZE BUILDER ── */
+        .size-builder { margin-bottom: 1rem; }
+        .size-toggle-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0.75rem; }
+        .size-toggle {
+            padding: 7px 14px; border-radius: 0.55rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+            font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em;
+            color: rgba(255,255,255,0.35); cursor: pointer;
+            transition: all 0.2s ease; user-select: none;
+        }
+        .size-toggle:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
+        .size-toggle.on { background: rgba(139,0,0,0.2); border-color: #8B0000; color: #fff; }
+        /* stock inputs grid */
+        .stock-inputs { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+        .stock-input-wrap { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 0.7rem; padding: 0.6rem 0.8rem; display: none; }
+        .stock-input-wrap.visible { display: flex; flex-direction: column; gap: 4px; }
+        .stock-input-wrap label { font-size: 8px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; color: #8B0000; }
+        .stock-qty { width: 100%; background: none; border: none; color: #fff; font-size: 1rem; font-weight: 900; outline: none; }
+        .stock-qty::placeholder { color: rgba(255,255,255,0.15); }
+        /* ── BUTTONS ── */
+        .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(135deg, #8B0000, #c0392b); color: #fff; font-family: 'Archivo Black', sans-serif; font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase; border: none; border-radius: 0.9rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(139,0,0,0.25); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(139,0,0,0.45); }
+        .btn-danger { padding: 5px 12px; background: none; border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.2); font-size: 7px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; }
+        .btn-danger:hover { border-color: rgba(139,0,0,0.4); color: #c0392b; }
+        /* ── PRODUCT CARD (manage) ── */
+        .p-card {
+            display: flex; align-items: center; gap: 1rem;
+            background: rgba(10,10,10,0.6); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.2rem; padding: 0.9rem 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .p-card:hover { border-color: rgba(139,0,0,0.2); }
+        .p-card img { width: 56px; height: 56px; object-fit: cover; border-radius: 0.7rem; flex-shrink: 0; }
+        .p-card-info { flex: 1; min-width: 0; }
+        .p-card-name { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-card-price { font-size: 9px; font-weight: 900; color: #c0392b; margin-top: 2px; }
+        .p-card-sizes { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+        .size-chip { font-size: 7px; font-weight: 900; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); }
+        .size-chip.oos { opacity: 0.3; text-decoration: line-through; }
+        .size-chip.low { border-color: rgba(230,126,34,0.4); color: rgba(230,126,34,0.7); }
+        .size-chip.good { border-color: rgba(46,204,113,0.3); color: rgba(46,204,113,0.6); }
+        /* ── BOTTOM NAV ── */
         .admin-nav {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 260px; height: 65px; background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(20px); border-radius: 99px; display: flex; 
-            justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+            width: 280px; height: 62px; background: rgba(12,12,12,0.9);
+            backdrop-filter: blur(20px); border-radius: 999px;
+            display: flex; justify-content: space-around; align-items: center;
+            border: 1px solid rgba(255,255,255,0.07); z-index: 1000;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
         }
-        .view { display: none; padding: 100px 20px 40px; }
-        .view.active { display: block; }
-        .input-admin { 
-            width: 100%; background: #080808; border: 1px solid #1a1a1a; 
-            padding: 16px; border-radius: 12px; color: #fff; margin-bottom: 12px;
-            font-size: 13px; outline: none;
+        .nav-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            padding: 8px 16px; border-radius: 999px; background: none; border: none;
+            font-size: 6px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase;
+            color: rgba(255,255,255,0.2); cursor: pointer; transition: color 0.3s ease;
         }
-        .nav-btn { color: #444; transition: 0.3s; background: none; border: none; }
-        .nav-btn.active { color: #8B0000; }
-        .card-manage { background: #050505; border: 1px solid #111; padding: 15px; border-radius: 20px; }
+        .nav-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-btn:hover { color: rgba(255,255,255,0.7); }
+        .nav-btn.active { color: #c0392b; }
+        /* ── ORDERS ── */
+        .order-card {
+            background: rgba(10,10,10,0.6); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.2rem; padding: 1.1rem 1.1rem 0.9rem; margin-bottom: 0.75rem;
+            transition: border-color 0.3s ease;
+        }
+        .order-card:hover { border-color: rgba(139,0,0,0.2); }
+        .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.7rem; }
+        .order-id { font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); }
+        .order-date { font-size: 7px; font-weight: 600; color: rgba(255,255,255,0.2); }
+        .order-items { margin-bottom: 0.7rem; }
+        .order-item-row { display: flex; justify-content: space-between; font-size: 9px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .order-item-row:last-child { border: none; }
+        .order-item-name { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); }
+        .order-item-size { color: #8B0000; font-weight: 900; font-size: 8px; }
+        .order-item-price { font-weight: 900; color: #c0392b; }
+        .order-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; gap: 8px; }
+        .order-meta { font-size: 8px; color: rgba(255,255,255,0.35); }
+        .order-meta span { color: rgba(255,255,255,0.6); font-weight: 700; }
+        .order-total { font-size: 11px; font-weight: 900; color: #fff; }
+        .order-status-wrap { display: flex; align-items: center; gap: 8px; }
+        .status-select {
+            font-size: 7px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            color: #fff; padding: 5px 10px; border-radius: 0.5rem; outline: none; cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        .status-select.pendente  { border-color: rgba(230,126,34,0.4); color: #e67e22; }
+        .status-select.confirmado { border-color: rgba(46,204,113,0.3); color: #2ecc71; }
+        .status-select.entregue  { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
+        .status-select.cancelado { border-color: rgba(192,57,43,0.4); color: #c0392b; }
+        /* stats bar */
+        .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
+        .stat-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 1rem; padding: 0.9rem; text-align: center; }
+        .stat-num { font-family: 'Archivo Black', sans-serif; font-size: 1.4rem; font-style: italic; line-height: 1; }
+        .stat-label { font-size: 7px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 4px; }
+        /* empty */
+        .empty-state { text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.1); font-size: 8px; font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase; }
+        /* toast */
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(139,0,0,0.95); backdrop-filter: blur(10px); color: #fff; font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px 24px; border-radius: 999px; z-index: 9000; opacity: 0; transition: all 0.4s ease; pointer-events: none; border: 1px solid rgba(255,255,255,0.1); }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* divider */
+        .row-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); margin: 1.2rem 0; }
     </style>
 </head>
 <body>
-
-    <header class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 bg-black/90">
-        <h1 class="text-[10px] font-heavy italic text-red-700 uppercase">Nexus Sive Admin</h1>
+    <!-- HEADER -->
+    <header class="site-header">
+        <img src="ei_1776150431404-removebg-preview.png" alt="NEXUS">
+        <span class="header-badge">Painel Supremo</span>
     </header>
-
-    <!-- Visualização: Gerir Stock -->
+    <!-- ══════════════════════════════════════
+         VIEW: STOCK / MANAGE
+    ══════════════════════════════════════ -->
     <div id="view-manage" class="view active">
-        <h2 class="text-2xl font-heavy italic mb-6 uppercase">Stock Atual</h2>
-        <div id="manage-list" class="space-y-4"></div>
+        <h2 class="view-title">Stock <span>Atual</span></h2>
+        <!-- Stats -->
+        <div class="stats-bar" id="stats-bar"></div>
+        <div id="manage-list" class="space-y-3"></div>
     </div>
-
-    <!-- Visualização: Adicionar Produto -->
+    <!-- ══════════════════════════════════════
+         VIEW: ADD PRODUCT
+    ══════════════════════════════════════ -->
     <div id="view-add" class="view">
-        <h2 class="text-2xl font-heavy italic mb-6 uppercase text-red-700">Novo Drop</h2>
-        <div class="w-full h-40 border-2 border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center mb-4 bg-zinc-950" id="drop-zone" onclick="document.getElementById('p-img').click()">
-            <i data-lucide="camera" class="text-zinc-700 mb-2"></i>
-            <span id="img-status" class="text-[9px] text-zinc-600 font-black uppercase">Selecionar Foto</span>
+        <h2 class="view-title">Novo <span>Drop</span></h2>
+        <!-- Image -->
+        <label class="f-label">Foto do Produto</label>
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('p-img').click()">
+            <svg width="28" height="28" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" viewBox="0 0 24 24" class="mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+            <p class="drop-zone-text" id="img-status">Clica para seleccionar</p>
             <input type="file" id="p-img" class="hidden" accept="image/*">
         </div>
-        <input type="text" id="p-name" placeholder="NOME DO PRODUTO" class="input-admin">
-        <input type="number" id="p-price" placeholder="PREÇO (MT)" class="input-admin">
-        <input type="text" id="p-cat" placeholder="CATEGORIA" class="input-admin">
-        <textarea id="p-desc" placeholder="DESCRIÇÃO" class="input-admin h-20"></textarea>
-        <select id="p-status" class="input-admin">
-            <option value="disponivel">EM STOCK</option>
-            <option value="prestes">POUCAS UNIDADES</option>
-            <option value="acabou">ESGOTADO</option>
-        </select>
-        <button onclick="saveProduct()" class="w-full bg-red-800 py-4 rounded-xl font-heavy text-xs uppercase">Criar Produto</button>
+        <!-- Basic info -->
+        <label class="f-label">Nome do Produto</label>
+        <input type="text" id="p-name" placeholder="ex: Nexus Core Hoodie" class="input-admin">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+                <label class="f-label">Preço (MT)</label>
+                <input type="number" id="p-price" placeholder="3500" class="input-admin">
+            </div>
+            <div>
+                <label class="f-label">Categoria</label>
+                <input type="text" id="p-cat" placeholder="Hoodie" class="input-admin">
+            </div>
+        </div>
+        <label class="f-label">Descrição</label>
+        <textarea id="p-desc" placeholder="Descreve o produto..." class="input-admin"></textarea>
+        <!-- ── SIZE BUILDER ── -->
+        <div class="size-builder">
+            <label class="f-label">Tamanhos Disponíveis <span style="color:rgba(255,255,255,0.15);font-size:7px;">(clica para activar)</span></label>
+            <div class="size-toggle-row" id="size-toggle-row">
+                <!-- gerado por JS -->
+            </div>
+            <div class="stock-inputs" id="stock-inputs">
+                <!-- gerado por JS -->
+            </div>
+        </div>
+        <div class="row-divider"></div>
+        <button onclick="saveProduct()" class="btn-primary" id="btn-save">Criar Produto</button>
     </div>
-
+    <!-- ══════════════════════════════════════
+         VIEW: ORDERS
+    ══════════════════════════════════════ -->
+    <div id="view-orders" class="view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
+            <h2 class="view-title" style="margin:0;">Pedidos <span>Recebidos</span></h2>
+            <div style="display:flex;gap:8px;">
+                <select id="order-filter" class="input-admin" style="margin:0;width:auto;font-size:9px;padding:6px 10px;" onchange="renderOrders()">
+                    <option value="all">Todos</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="confirmado">Confirmados</option>
+                    <option value="entregue">Entregues</option>
+                    <option value="cancelado">Cancelados</option>
+                </select>
+                <button onclick="clearAllOrders()" class="btn-danger">Limpar Todos</button>
+            </div>
+        </div>
+        <div class="stats-bar" id="order-stats"></div>
+        <div id="orders-list"></div>
+    </div>
+    <!-- BOTTOM NAV -->
     <nav class="admin-nav">
-        <button onclick="switchView('view-manage')" class="nav-btn active" id="nav-manage"><i data-lucide="home"></i></button>
-        <button onclick="switchView('view-add')" class="nav-btn" id="nav-add"><i data-lucide="plus"></i></button>
+        <button class="nav-btn active" id="nav-manage" onclick="switchView('manage')">
+            <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Stock
+        </button>
+        <button class="nav-btn" id="nav-add" onclick="switchView('add')">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Drop
+        </button>
+        <button class="nav-btn" id="nav-orders" onclick="switchView('orders')">
+            <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><polyline points="9 12 11 14 15 10"/></svg>
+            Pedidos
+        </button>
     </nav>
-
+    <!-- TOAST -->
+    <div id="toast"></div>
     <script>
-        lucide.createIcons();
-
-        // Preview da imagem
-        document.getElementById('p-img').onchange = function() {
-            if(this.files[0]) {
-                document.getElementById('img-status').innerText = "IMAGEM PRONTA";
-                document.getElementById('drop-zone').style.borderColor = "#8B0000";
-            }
+    /* ════════════════════════════════════════
+       CONSTANTS
+    ════════════════════════════════════════ */
+    const ALL_SIZES = ['XS','S','M','L','XL','XXL','ONE SIZE'];
+    const activeSizes = new Set();
+    /* ════════════════════════════════════════
+       TOAST
+    ════════════════════════════════════════ */
+    function toast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 2500);
+    }
+    /* ════════════════════════════════════════
+       VIEW SWITCHER
+    ════════════════════════════════════════ */
+    function switchView(v) {
+        ['manage','add','orders'].forEach(id => {
+            document.getElementById('view-' + id).classList.remove('active');
+            document.getElementById('nav-' + id).classList.remove('active');
+        });
+        document.getElementById('view-' + v).classList.add('active');
+        document.getElementById('nav-' + v).classList.add('active');
+        if (v === 'manage') renderManage();
+        if (v === 'orders') renderOrders();
+    }
+    /* ════════════════════════════════════════
+       IMAGE DROP ZONE
+    ════════════════════════════════════════ */
+    document.getElementById('p-img').addEventListener('change', function() {
+        if (!this.files[0]) return;
+        const zone = document.getElementById('drop-zone');
+        // Remove old preview
+        const old = zone.querySelector('img.preview');
+        if (old) old.remove();
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview';
+            zone.appendChild(img);
+            zone.classList.add('loaded');
+            document.getElementById('img-status').textContent = '✓ Imagem carregada';
         };
-
-        function switchView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('nav-' + id.split('-')[1]).classList.add('active');
-            if(id === 'view-manage') renderManage();
+        reader.readAsDataURL(this.files[0]);
+    });
+    /* ════════════════════════════════════════
+       SIZE BUILDER — init
+    ════════════════════════════════════════ */
+    function buildSizeUI() {
+        const toggleRow = document.getElementById('size-toggle-row');
+        const stockGrid = document.getElementById('stock-inputs');
+        toggleRow.innerHTML = ALL_SIZES.map(s => `
+            <div class="size-toggle" data-size="${s}" onclick="toggleSize('${s}')">${s}</div>
+        `).join('');
+        stockGrid.innerHTML = ALL_SIZES.map(s => `
+            <div class="stock-input-wrap" id="wrap-${s}">
+                <label>${s}</label>
+                <input type="number" class="stock-qty" id="qty-${s}" placeholder="0" min="0">
+            </div>
+        `).join('');
+    }
+    function toggleSize(s) {
+        const btn  = document.querySelector(`[data-size="${s}"]`);
+        const wrap = document.getElementById(`wrap-${s}`);
+        if (activeSizes.has(s)) {
+            activeSizes.delete(s);
+            btn.classList.remove('on');
+            wrap.classList.remove('visible');
+            document.getElementById(`qty-${s}`).value = '';
+        } else {
+            activeSizes.add(s);
+            btn.classList.add('on');
+            wrap.classList.add('visible');
+            setTimeout(() => document.getElementById(`qty-${s}`).focus(), 50);
         }
-
-        // Função de Compressão para não estourar o LocalStorage
-        const compressImage = (file) => {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 500; 
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
+    }
+    /* ════════════════════════════════════════
+       IMAGE COMPRESSION
+    ════════════════════════════════════════ */
+    function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = e => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const MAX = 480;
+                    const scale = MAX / Math.max(img.width, img.height);
+                    const w = Math.round(img.width  * (scale < 1 ? scale : 1));
+                    const h = Math.round(img.height * (scale < 1 ? scale : 1));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.72));
                 };
-            });
-        };
-
-        async function saveProduct() {
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const imgFile = document.getElementById('p-img').files[0];
-
-            if(!name || !price || !imgFile) return alert("Preencha Nome, Preço e Foto!");
-
-            try {
-                const compressedBase64 = await compressImage(imgFile);
-                const product = {
-                    id: Date.now(),
-                    image: compressedBase64,
-                    name: name,
-                    price: price,
-                    category: document.getElementById('p-cat').value || "Geral",
-                    desc: document.getElementById('p-desc').value || "",
-                    status: document.getElementById('p-status').value
-                };
-
-                let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
-                db.push(product);
-                localStorage.setItem('nexus_db', JSON.stringify(db));
-                
-                alert("Produto Adicionado!");
-                location.reload();
-            } catch (e) {
-                alert("Erro ao salvar. Tente uma imagem menor.");
-            }
+                img.onerror = reject;
+            };
+            reader.onerror = reject;
+        });
+    }
+    /* ════════════════════════════════════════
+       SAVE PRODUCT
+    ════════════════════════════════════════ */
+    async function saveProduct() {
+        const name   = document.getElementById('p-name').value.trim();
+        const price  = document.getElementById('p-price').value.trim();
+        const imgFile = document.getElementById('p-img').files[0];
+        if (!name || !price || !imgFile) {
+            toast('Preenche nome, preço e foto!');
+            return;
         }
-
-        function renderManage() {
-            const list = document.getElementById('manage-list');
-            const db = JSON.parse(localStorage.getItem('nexus_db')) || [];
-            
-            if(db.length === 0) {
-                list.innerHTML = "<p class='text-zinc-600 text-center uppercase text-[10px]'>Nenhum produto em stock</p>";
-                return;
+        if (activeSizes.size === 0) {
+            toast('Selecciona pelo menos 1 tamanho!');
+            return;
+        }
+        // Build sizes object
+        const sizes = {};
+        activeSizes.forEach(s => {
+            const qty = parseInt(document.getElementById(`qty-${s}`).value) || 0;
+            sizes[s] = qty;
+        });
+        const btn = document.getElementById('btn-save');
+        btn.textContent = 'A guardar...';
+        btn.disabled = true;
+        try {
+            const imageB64 = await compressImage(imgFile);
+            const product = {
+                id:       Date.now(),
+                name,
+                price,
+                category: document.getElementById('p-cat').value.trim(),
+                desc:     document.getElementById('p-desc').value.trim(),
+                image:    imageB64,
+                sizes,
+                createdAt: new Date().toISOString()
+            };
+            let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+            db.push(product);
+            localStorage.setItem('nexus_db', JSON.stringify(db));
+            toast('Produto criado com sucesso!');
+            resetForm();
+            setTimeout(() => switchView('manage'), 1200);
+        } catch (e) {
+            toast('Erro: memória cheia ou imagem inválida.');
+            console.error(e);
+        } finally {
+            btn.textContent = 'Criar Produto';
+            btn.disabled = false;
+        }
+    }
+    function resetForm() {
+        ['p-name','p-price','p-cat','p-desc'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('p-img').value = '';
+        document.getElementById('img-status').textContent = 'Clica para seleccionar';
+        const zone = document.getElementById('drop-zone');
+        const old = zone.querySelector('img.preview');
+        if (old) old.remove();
+        zone.classList.remove('loaded');
+        activeSizes.clear();
+        ALL_SIZES.forEach(s => {
+            const btn = document.querySelector(`[data-size="${s}"]`);
+            if (btn) btn.classList.remove('on');
+            const wrap = document.getElementById(`wrap-${s}`);
+            if (wrap) { wrap.classList.remove('visible'); }
+            const qty = document.getElementById(`qty-${s}`);
+            if (qty) qty.value = '';
+        });
+    }
+    /* ════════════════════════════════════════
+       RENDER MANAGE
+    ════════════════════════════════════════ */
+    function totalStock(p) {
+        if (!p.sizes) return 0;
+        return Object.values(p.sizes).reduce((a,b) => a+b, 0);
+    }
+    function renderManage() {
+        const db   = JSON.parse(localStorage.getItem('nexus_db')) || [];
+        const list = document.getElementById('manage-list');
+        const statsBar = document.getElementById('stats-bar');
+        const totalProducts = db.length;
+        const totalUnits    = db.reduce((a, p) => a + totalStock(p), 0);
+        const outOfStock    = db.filter(p => totalStock(p) === 0).length;
+        statsBar.innerHTML = [
+            { num: totalProducts, label: 'Produtos', color: '#fff' },
+            { num: totalUnits,    label: 'Unidades', color: '#2ecc71' },
+            { num: outOfStock,    label: 'Esgotados', color: '#c0392b' }
+        ].map(s => `
+            <div class="stat-box">
+                <p class="stat-num" style="color:${s.color};">${s.num}</p>
+                <p class="stat-label">${s.label}</p>
+            </div>
+        `).join('');
+        if (db.length === 0) {
+            list.innerHTML = `<div class="empty-state">Nenhum produto criado ainda</div>`;
+            return;
+        }
+        list.innerHTML = db.map(p => {
+            const tot = totalStock(p);
+            const sizeChips = p.sizes ? Object.entries(p.sizes).map(([s, q]) => {
+                const cls = q === 0 ? 'oos' : q <= 3 ? 'low' : 'good';
+                return `<span class="size-chip ${cls}" title="${q} unidades">${s}·${q}</span>`;
+            }).join('') : '';
+            return `
+            <div class="p-card">
+                <img src="${p.image}" alt="${p.name}">
+                <div class="p-card-info">
+                    <p class="p-card-name">${p.name}</p>
+                    <p class="p-card-price">${p.price} MT</p>
+                    <div class="p-card-sizes">${sizeChips || '<span class="size-chip">sem sizes</span>'}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+                    <button class="btn-danger" onclick="editStockModal(${p.id})">Editar</button>
+                    <button class="btn-danger" onclick="deleteProduct(${p.id})" style="border-color:rgba(192,57,43,0.3);color:rgba(192,57,43,0.5);">Apagar</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    function deleteProduct(id) {
+        let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+        db = db.filter(p => p.id !== id);
+        localStorage.setItem('nexus_db', JSON.stringify(db));
+        renderManage();
+        toast('Produto removido');
+    }
+    /* ── INLINE STOCK EDIT ── */
+    function editStockModal(id) {
+        let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+        const p = db.find(x => x.id === id);
+        if (!p) return;
+        // Build a quick inline edit form replacing the card
+        const cards = document.querySelectorAll('.p-card');
+        cards.forEach(c => { if (c.dataset.editId) c.remove(); });
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'background:rgba(139,0,0,0.07);border:1px solid rgba(139,0,0,0.2);border-radius:1.2rem;padding:1rem;margin-top:-0.75rem;margin-bottom:0.5rem;';
+        wrapper.dataset.editId = id;
+        const currentSizes = p.sizes || {};
+        const sizesHtml = ALL_SIZES.map(s => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                <span style="font-size:9px;font-weight:900;letter-spacing:0.1em;color:rgba(255,255,255,0.5);">${s}</span>
+                <input type="number" min="0" value="${currentSizes[s] ?? ''}" placeholder="—"
+                    id="edit-qty-${id}-${s}"
+                    style="width:60px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:900;outline:none;text-align:center;">
+            </div>
+        `).join('');
+        wrapper.innerHTML = `
+            <p style="font-size:8px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px;">Editar Stock — ${p.name}</p>
+            ${sizesHtml}
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button onclick="saveStockEdit(${id})" style="flex:1;padding:8px;background:linear-gradient(135deg,#8B0000,#c0392b);color:#fff;font-size:7px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;">Guardar</button>
+                <button onclick="this.closest('[data-edit-id]').remove()" style="padding:8px 14px;background:none;border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.3);font-size:7px;font-weight:900;border-radius:8px;cursor:pointer;">Cancelar</button>
+            </div>`;
+        // Insert after the clicked card
+        const allCards = document.querySelectorAll('#manage-list .p-card');
+        let targetCard;
+        allCards.forEach(c => { if (c.querySelector(`[onclick="deleteProduct(${id})"]`)) targetCard = c; });
+        if (targetCard) targetCard.insertAdjacentElement('afterend', wrapper);
+    }
+    function saveStockEdit(id) {
+        let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+        const idx = db.findIndex(x => x.id === id);
+        if (idx === -1) return;
+        const newSizes = {};
+        ALL_SIZES.forEach(s => {
+            const el = document.getElementById(`edit-qty-${id}-${s}`);
+            if (el && el.value !== '') {
+                newSizes[s] = parseInt(el.value) || 0;
             }
-
-            list.innerHTML = db.map(p => `
-                <div class="card-manage flex items-center gap-4">
-                    <img src="${p.image}" class="w-14 h-14 rounded-lg object-cover bg-zinc-900">
-                    <div class="flex-1">
-                        <h4 class="text-[11px] font-black uppercase tracking-widest">${p.name}</h4>
-                        <p class="text-[10px] text-red-700 font-bold">${p.price} MT</p>
-                    </div>
-                    <button onclick="deleteProduct(${p.id})" class="text-zinc-500 hover:text-red-600 transition">
-                        <i data-lucide="trash-2" size="18"></i>
-                    </button>
+        });
+        db[idx].sizes = newSizes;
+        localStorage.setItem('nexus_db', JSON.stringify(db));
+        toast('Stock actualizado!');
+        renderManage();
+    }
+    /* ════════════════════════════════════════
+       RENDER ORDERS
+    ════════════════════════════════════════ */
+    function renderOrders() {
+        const filter = document.getElementById('order-filter').value;
+        let orders   = JSON.parse(localStorage.getItem('nexus_orders')) || [];
+        const list   = document.getElementById('orders-list');
+        const stats  = document.getElementById('order-stats');
+        // Stats
+        const pending   = orders.filter(o => (o.status || 'pendente') === 'pendente').length;
+        const confirmed = orders.filter(o => o.status === 'confirmado').length;
+        const delivered = orders.filter(o => o.status === 'entregue').length;
+        stats.innerHTML = [
+            { num: orders.length, label: 'Total',      color: '#fff' },
+            { num: pending,       label: 'Pendentes',  color: '#e67e22' },
+            { num: confirmed,     label: 'Confirmados',color: '#2ecc71' },
+        ].map(s => `
+            <div class="stat-box">
+                <p class="stat-num" style="color:${s.color};">${s.num}</p>
+                <p class="stat-label">${s.label}</p>
+            </div>
+        `).join('');
+        // Filter
+        const display = filter === 'all' ? orders : orders.filter(o => (o.status || 'pendente') === filter);
+        // Sort newest first
+        display.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        if (display.length === 0) {
+            list.innerHTML = `<div class="empty-state">${orders.length === 0 ? 'Nenhum pedido recebido ainda' : 'Sem pedidos com este filtro'}</div>`;
+            return;
+        }
+        list.innerHTML = display.map(order => {
+            const status = order.status || 'pendente';
+            const date   = order.createdAt ? new Date(order.createdAt).toLocaleString('pt-PT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : '—';
+            const items  = (order.items || []).map(item => `
+                <div class="order-item-row">
+                    <span class="order-item-name">${item.name}${item.selectedSize ? ` <span class="order-item-size">[${item.selectedSize}]</span>` : ''}</span>
+                    <span class="order-item-price">${item.price} MT</span>
                 </div>
             `).join('');
-            lucide.createIcons();
-        }
-
-        function deleteProduct(id) {
-            if(confirm("Remover este produto?")) {
-                let db = JSON.parse(localStorage.getItem('nexus_db')) || [];
-                db = db.filter(p => p.id !== id);
-                localStorage.setItem('nexus_db', JSON.stringify(db));
-                renderManage();
-            }
-        }
-
-        window.onload = renderManage;
+            return `
+            <div class="order-card" id="order-${order.id}">
+                <div class="order-header">
+                    <span class="order-id">#${String(order.id).slice(-6)}</span>
+                    <span class="order-date">${date}</span>
+                </div>
+                <div class="order-items">${items}</div>
+                <div class="order-footer">
+                    <div>
+                        <div class="order-meta">📍 <span>${order.location || '—'}</span></div>
+                        <div class="order-meta">📞 <span>${order.phone || '—'}</span></div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="order-total">${order.total || '—'} MT</div>
+                        <div class="order-status-wrap" style="margin-top:6px;">
+                            <select class="status-select ${status}" onchange="updateOrderStatus(${order.id}, this)">
+                                <option value="pendente"   ${status==='pendente'   ?'selected':''}>Pendente</option>
+                                <option value="confirmado" ${status==='confirmado' ?'selected':''}>Confirmado</option>
+                                <option value="entregue"   ${status==='entregue'   ?'selected':''}>Entregue</option>
+                                <option value="cancelado"  ${status==='cancelado'  ?'selected':''}>Cancelado</option>
+                            </select>
+                            <button class="btn-danger" onclick="deleteOrder(${order.id})" style="padding:4px 8px;font-size:6px;">✕</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    function updateOrderStatus(id, select) {
+        let orders = JSON.parse(localStorage.getItem('nexus_orders')) || [];
+        const idx  = orders.findIndex(o => o.id === id);
+        if (idx === -1) return;
+        orders[idx].status = select.value;
+        localStorage.setItem('nexus_orders', JSON.stringify(orders));
+        select.className = `status-select ${select.value}`;
+        toast('Estado actualizado');
+    }
+    function deleteOrder(id) {
+        let orders = JSON.parse(localStorage.getItem('nexus_orders')) || [];
+        orders = orders.filter(o => o.id !== id);
+        localStorage.setItem('nexus_orders', JSON.stringify(orders));
+        renderOrders();
+        toast('Pedido removido');
+    }
+    function clearAllOrders() {
+        if (!confirm('Tens a certeza que queres apagar TODOS os pedidos?')) return;
+        localStorage.removeItem('nexus_orders');
+        renderOrders();
+        toast('Pedidos limpos');
+    }
+    /* ════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════ */
+    window.addEventListener('load', () => {
+        buildSizeUI();
+        renderManage();
+    });
     </script>
 </body>
 </html>
