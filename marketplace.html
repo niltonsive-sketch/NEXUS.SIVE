@@ -6,58 +6,65 @@
     <title>MARKETPLACE | NEXUS SIVE</title>
     <meta name="description" content="Nexus Sive — Small details, big differences. O teu marketplace de streetwear premium.">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
     <style>
-        /* ── BASE ── */
         *, *::before, *::after { box-sizing: border-box; }
         body { background: #050505; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .font-heavy { font-family: 'Archivo Black', sans-serif; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #7f0000; border-radius: 10px; }
-        /* ── NOISE ── */
         body::before {
             content: ''; position: fixed; inset: 0;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
             pointer-events: none; z-index: 9999; opacity: 0.4;
         }
-        /* ── ORBS ── */
         .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; animation: orb-drift 20s ease-in-out infinite; }
         .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(139,0,0,0.15) 0%, transparent 70%); top: -200px; left: -200px; }
         .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(100,0,0,0.1) 0%, transparent 70%); bottom: 100px; right: -100px; animation-delay: -10s; }
         @keyframes orb-drift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px,20px); } }
-        /* ── INTRO ── */
         #intro-overlay {
             position: fixed; inset: 0; background: #000; z-index: 6000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 1.2s ease, visibility 1.2s ease;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
         #intro-overlay.hide { opacity: 0; visibility: hidden; pointer-events: none; }
         .intro-logo { width: 100px; animation: intro-pulse 2s ease-in-out infinite; filter: drop-shadow(0 0 30px rgba(139,0,0,0.6)); }
         @keyframes intro-pulse { 0%,100% { opacity:0.8; transform:scale(1); } 50% { opacity:1; transform:scale(1.04); } }
-        #typewriter { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: #3a3a3a; font-style: italic; margin-top: 28px; }
+        #typewriter { font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase; color: #3a3a3a; font-style: italic; margin-top: 28px; min-height: 20px; }
         .intro-line { width: 0; height: 1px; background: linear-gradient(90deg, transparent, #7f0000, transparent); margin-top: 24px; animation: intro-line-grow 2s ease forwards 0.5s; }
         @keyframes intro-line-grow { to { width: 200px; } }
-        /* ── HEADER ── */
+        .skip-intro { 
+            position: absolute; bottom: 40px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: rgba(255,255,255,0.3); 
+            padding: 8px 20px; 
+            border-radius: 999px; 
+            font-size: 7px; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            font-weight: 900;
+        }
+        .skip-intro:hover { background: rgba(255,255,255,0.1); color: #fff; }
         header { position: relative; z-index: 10; padding: 3rem 2rem 2rem; max-width: 900px; margin: 0 auto; }
         .header-logo { width: 90px; margin-bottom: 2.5rem; cursor: pointer; filter: drop-shadow(0 0 20px rgba(139,0,0,0.3)); transition: filter 0.3s ease; }
         .header-logo:hover { filter: drop-shadow(0 0 35px rgba(139,0,0,0.6)); }
-        /* ── SEARCH ── */
         .search-wrap { position: relative; }
         .search-wrap::before { content: ''; position: absolute; inset: -1px; border-radius: 1.2rem; background: linear-gradient(135deg, rgba(139,0,0,0.4), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
         .search-wrap:focus-within::before { opacity: 1; }
         #search-input { width: 100%; background: rgba(10,10,10,0.8); border: 1px solid rgba(255,255,255,0.06); padding: 1.1rem 1.5rem; border-radius: 1.2rem; font-size: 9px; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; color: #fff; outline: none; transition: border-color 0.3s ease; backdrop-filter: blur(10px); }
         #search-input::placeholder { color: rgba(255,255,255,0.2); }
         #search-input:focus { border-color: rgba(139,0,0,0.5); }
-        /* ── HEADING ── */
         .section-heading { display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem; }
         .section-heading h2 { font-family: 'Archivo Black', sans-serif; font-size: clamp(1.8rem, 5vw, 2.4rem); font-style: italic; text-transform: uppercase; letter-spacing: -0.03em; color: #8B0000; line-height: 1; }
         .heading-badge { font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: #8B0000; background: rgba(139,0,0,0.1); border: 1px solid rgba(139,0,0,0.3); padding: 4px 10px; border-radius: 999px; margin-top: 4px; }
-        /* ── GRID ── */
         #product-list { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
         @media (min-width: 640px) { #product-list { grid-template-columns: repeat(2, 1fr); } }
-        /* ── CARD ── */
         .product-card {
             background: rgba(10,10,10,0.6); border: 1px solid rgba(255,255,255,0.05);
             border-radius: 2rem; overflow: hidden; backdrop-filter: blur(10px);
@@ -67,12 +74,11 @@
         .product-card::before { content: ''; position: absolute; inset: 0; border-radius: 2rem; background: linear-gradient(135deg, rgba(139,0,0,0.07) 0%, transparent 60%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
         .product-card:hover { border-color: rgba(139,0,0,0.3); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,0,0,0.15); }
         .product-card:hover::before { opacity: 1; }
-        .card-image-wrap { aspect-ratio: 1; overflow: hidden; position: relative; }
+        .card-image-wrap { aspect-ratio: 1; overflow: hidden; position: relative; background: #111; }
         .card-image-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
         .product-card:hover .card-image-wrap img { transform: scale(1.05); }
         .card-image-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%); opacity: 0; transition: opacity 0.4s ease; }
         .product-card:hover .card-image-overlay { opacity: 1; }
-        /* ── STOCK BADGE (on image) ── */
         .stock-badge {
             position: absolute; top: 12px; right: 12px; z-index: 2;
             font-size: 7px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase;
@@ -82,13 +88,11 @@
         .stock-badge.in-stock { background: rgba(0,0,0,0.6); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
         .stock-badge.low-stock { background: rgba(139,0,0,0.35); color: #ff6b6b; border: 1px solid rgba(139,0,0,0.4); }
         .stock-badge.out-stock { background: rgba(30,30,30,0.9); color: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.06); }
-        /* ── CARD BODY ── */
         .card-body { padding: 1.25rem 1.25rem 1.5rem; }
         .card-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
         .card-name { font-family: 'Archivo Black', sans-serif; font-size: 1.1rem; font-style: italic; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.3rem; }
         .card-desc { font-size: 8px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
         .card-price { font-size: 1.1rem; font-weight: 900; color: #c0392b; white-space: nowrap; }
-        /* ── SIZE SELECTOR ── */
         .size-label {
             font-size: 7px; font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase;
             color: rgba(255,255,255,0.2); margin-bottom: 8px;
@@ -127,7 +131,6 @@
             cursor: not-allowed;
             text-decoration: line-through;
         }
-        /* tiny stock dot under size label */
         .size-stock-dot {
             width: 4px; height: 4px; border-radius: 50%;
             position: absolute; bottom: 4px;
@@ -135,7 +138,6 @@
         .stock-good  { background: #2ecc71; }
         .stock-low   { background: #e67e22; }
         .stock-zero  { background: transparent; }
-        /* ── TOTAL STOCK INFO ── */
         .stock-info-row {
             display: flex; align-items: center; gap: 6px;
             margin-bottom: 0.9rem;
@@ -146,7 +148,6 @@
         .stock-info-text.good  { color: rgba(46,204,113,0.7); }
         .stock-info-text.low   { color: rgba(230,126,34,0.8); }
         .stock-info-text.zero  { color: rgba(255,255,255,0.2); }
-        /* ── ADD BUTTON ── */
         .btn-add {
             width: 100%; padding: 0.95rem; border-radius: 0.9rem;
             font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase;
@@ -163,7 +164,6 @@
         .btn-add.needs-size { border-color: rgba(139,0,0,0.3); color: rgba(255,255,255,0.35); }
         @keyframes flash-add { 0% { background: rgba(139,0,0,0.3); } 100% { background: rgba(139,0,0,0); } }
         .flash { animation: flash-add 0.5s ease; }
-        /* ── GLASS NAV ── */
         .glass-nav { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); width: 260px; height: 58px; background: rgba(8,8,8,0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.07); border-radius: 999px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 14px; border-radius: 999px; text-decoration: none; font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); transition: color 0.3s ease; background: none; border: none; cursor: pointer; }
         .nav-item:hover { color: rgba(255,255,255,0.9); }
@@ -173,10 +173,8 @@
         #bag-btn { position: relative; }
         #cart-dot { position: absolute; top: 4px; right: 8px; width: 6px; height: 6px; background: #fff; border-radius: 50%; border: 1px solid #000; display: none; animation: pop-in 0.3s ease; }
         @keyframes pop-in { 0% { transform:scale(0); } 70% { transform:scale(1.3); } 100% { transform:scale(1); } }
-        /* ── MODAL BACKDROP ── */
         #modal-cart { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(16px); z-index: 5000; align-items: flex-end; justify-content: center; padding-bottom: 100px; }
         @media (min-width: 640px) { #modal-cart { align-items: center; padding-bottom: 0; } }
-        /* ── MODAL PANEL ── */
         .modal-panel { background: rgba(8,8,8,0.98); border: 1px solid rgba(255,255,255,0.07); width: 92%; max-width: 420px; border-radius: 2.2rem 2.2rem 1.5rem 1.5rem; padding: 2rem; box-shadow: 0 -10px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,0,0,0.08) inset; animation: modal-slide-up 0.35s cubic-bezier(0.34,1.56,0.64,1); position: relative; overflow: hidden; }
         @media (min-width: 640px) { .modal-panel { border-radius: 2.2rem; } }
         .modal-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(139,0,0,0.6), transparent); }
@@ -185,7 +183,6 @@
         .modal-title { font-family: 'Archivo Black', sans-serif; font-size: 1.3rem; font-style: italic; text-transform: uppercase; letter-spacing: -0.02em; }
         .modal-close { font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: all 0.2s ease; }
         .modal-close:hover { color: #fff; background: rgba(255,255,255,0.08); }
-        /* ── CART ITEMS ── */
         #cartItems { max-height: 200px; overflow-y: auto; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; padding-right: 4px; }
         #cartItems::-webkit-scrollbar { width: 3px; }
         #cartItems::-webkit-scrollbar-thumb { background: #7f0000; border-radius: 10px; }
@@ -196,12 +193,12 @@
         .cart-item-price { font-size: 9px; font-weight: 900; color: #c0392b; }
         .btn-remove { font-size: 7px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.2); background: none; border: 1px solid rgba(255,255,255,0.07); padding: 5px 10px; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
         .btn-remove:hover { color: #c0392b; border-color: rgba(192,57,43,0.3); }
-        /* ── MISC ── */
         .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent); margin-bottom: 1.5rem; }
         .field-label { display: block; font-size: 7px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 6px; margin-left: 2px; }
         .field-input { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); color: #fff; padding: 0.9rem 1rem; border-radius: 0.9rem; font-size: 11px; font-weight: 700; outline: none; transition: border-color 0.3s ease, background 0.3s ease; appearance: none; }
         .field-input:focus { border-color: rgba(139,0,0,0.5); background: rgba(139,0,0,0.04); }
         .field-input::placeholder { color: rgba(255,255,255,0.15); }
+        .field-input option { background: #1a1a1a; color: #fff; }
         .cart-total { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0.2rem; margin-bottom: 1rem; }
         .cart-total-label { font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
         .cart-total-value { font-size: 1.1rem; font-weight: 900; color: #fff; }
@@ -211,34 +208,52 @@
         .btn-finalize:hover::before { opacity: 1; }
         .btn-finalize:hover { box-shadow: 0 6px 30px rgba(139,0,0,0.5); transform: translateY(-1px); }
         .btn-finalize span { position: relative; z-index: 1; }
+        .btn-finalize:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-finalize:disabled::before { opacity: 0; }
         main { position: relative; z-index: 10; }
+        .loading-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .loading-card { background: rgba(10,10,10,0.4); border: 1px solid rgba(255,255,255,0.04); border-radius: 2rem; padding: 1rem; animation: pulse-loading 1.5s ease-in-out infinite; }
+        .loading-card .img-placeholder { width: 100%; aspect-ratio: 1; background: rgba(255,255,255,0.03); border-radius: 1rem; margin-bottom: 1rem; }
+        .loading-card .line { height: 10px; background: rgba(255,255,255,0.03); border-radius: 0.3rem; margin-bottom: 0.5rem; }
+        .loading-card .line.short { width: 60%; }
+        @keyframes pulse-loading { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(139,0,0,0.95); backdrop-filter: blur(10px); color: #fff; font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px 24px; border-radius: 999px; z-index: 9000; opacity: 0; transition: all 0.4s ease; pointer-events: none; border: 1px solid rgba(255,255,255,0.1); }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.error { background: rgba(192,57,43,0.95); }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <!-- INTRO -->
+    
     <div id="intro-overlay">
         <img src="ei_1776150431404-removebg-preview.png" alt="NEXUS SIVE" class="intro-logo">
         <div class="intro-line"></div>
         <h2 id="typewriter"></h2>
+        <button class="skip-intro" onclick="skipIntro()">Saltar →</button>
     </div>
-    <!-- HEADER -->
+    
     <header>
         <img src="ei_1776150431404-removebg-preview.png" alt="NEXUS" class="header-logo">
         <div class="search-wrap">
             <input type="text" id="search-input" oninput="searchProducts()" placeholder="Procurar artigo..." autocomplete="off">
         </div>
     </header>
-    <!-- MAIN -->
+    
     <main class="max-w-[900px] mx-auto px-8 pb-44">
         <div class="section-heading" data-aos="fade-right">
             <h2>Drops</h2>
             <span class="heading-badge">New</span>
         </div>
-        <div id="product-list"></div>
+        <div id="product-list">
+            <div class="loading-grid">
+                <div class="loading-card"><div class="img-placeholder"></div><div class="line"></div><div class="line short"></div></div>
+                <div class="loading-card"><div class="img-placeholder"></div><div class="line"></div><div class="line short"></div></div>
+            </div>
+        </div>
     </main>
-    <!-- NAV -->
+    
     <nav class="glass-nav">
         <a href="#" class="nav-item active">
             <span>Home</span>
@@ -254,7 +269,7 @@
             <span class="nav-dot"></span>
         </a>
     </nav>
-    <!-- BAG MODAL -->
+    
     <div id="modal-cart">
         <div class="modal-panel">
             <div class="modal-header">
@@ -269,8 +284,9 @@
             <div class="divider"></div>
             <div style="display:flex;flex-direction:column;gap:0.8rem;">
                 <div>
-                    <label class="field-label">Local de Entrega (Matola)</label>
+                    <label class="field-label">Local de Entrega</label>
                     <select id="location" class="field-input">
+                        <option value="">Selecciona o bairro</option>
                         <optgroup label="Matola" class="bg-black">
                             <option value="Malhapsene">Malhapsene</option>
                             <option value="Tchumene">Tchumene</option>
@@ -296,88 +312,225 @@
                     <label class="field-label">Teu Contacto</label>
                     <input type="tel" id="phone" placeholder="8X XXX XXXX" class="field-input">
                 </div>
-                <button onclick="sendOrder()" class="btn-finalize">
-                    <span>Finalizar no WhatsApp</span>
+                <button onclick="sendOrder()" class="btn-finalize" id="btn-finalize">
+                    <span>Finalizar Pedido</span>
                 </button>
             </div>
         </div>
     </div>
+    
+    <div id="toast"></div>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        /* ════════════════════════════════════════
+           SUPABASE CONFIG - FIXED
+        ════════════════════════════════════════ */
+        const SUPABASE_URL = 'https://houpkghkxgccdsppdxtq.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_NKe7hCRZOLH_HycfhhEr_A_QpbVVZ8O';
+        
+        // Usa uma instância única partilhada
+        let supabaseClient;
+        if (typeof window.supabaseClient === 'undefined') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            window.supabaseClient = supabaseClient;
+        } else {
+            supabaseClient = window.supabaseClient;
+        }
+
         AOS.init({ duration: 900, once: true, offset: 60 });
+
+        /* ════════════════════════════════════════
+           TOAST
+        ════════════════════════════════════════ */
+        function showToast(msg, isError = false) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = isError ? 'error' : '';
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        /* ════════════════════════════════════════
+           INTRO — COM TIMEOUT E SKIP
+        ════════════════════════════════════════ */
+        let introHidden = false;
+        let introTimer;
+
+        function hideIntro() {
+            if (introHidden) return;
+            introHidden = true;
+            document.getElementById("intro-overlay").classList.add("hide");
+        }
+
+        function skipIntro() {
+            const el = document.getElementById("typewriter");
+            el.textContent = "Small details, big differences.";
+            clearTimeout(introTimer);
+            setTimeout(hideIntro, 300);
+        }
+
+        function startIntro() {
+            const slogan = "Small details, big differences.";
+            let i = 0;
+            const el = document.getElementById("typewriter");
+            const timer = setInterval(() => {
+                if (i < slogan.length) { 
+                    el.textContent += slogan.charAt(i); 
+                    i++; 
+                } else { 
+                    clearInterval(timer); 
+                    introTimer = setTimeout(hideIntro, 1500);
+                }
+            }, 50);
+            // Força o fim da intro após 5 segundos (fallback)
+            setTimeout(() => {
+                if (!introHidden) {
+                    el.textContent = slogan;
+                    clearInterval(timer);
+                    introTimer = setTimeout(hideIntro, 500);
+                }
+            }, 5000);
+        }
+
         /* ════════════════════════════════════════
            SIZES HELPERS
         ════════════════════════════════════════ */
         const ALL_SIZES = ["XS","S","M","L","XL","XXL"];
-        /** Gera sizes padrão com stock aleatório se o produto não tiver */
-        function ensureSizes(p) {
-            if (p.sizes && typeof p.sizes === 'object' && !Array.isArray(p.sizes)) return p;
-            if (!p.sizes) {
-                // Produto legado — cria stock padrão
-                const sizes = {};
-                ALL_SIZES.forEach(s => { sizes[s] = Math.floor(Math.random() * 6); });
-                p.sizes = sizes;
-            }
-            return p;
-        }
+
         function totalStock(p) {
             if (!p.sizes) return 0;
             return Object.values(p.sizes).reduce((a, b) => a + b, 0);
         }
+
         function stockStatus(total) {
             if (total === 0) return 'zero';
             if (total <= 5) return 'low';
             return 'good';
         }
+
         /* ════════════════════════════════════════
-           DATA
+           LOAD PRODUCTS FROM SUPABASE
         ════════════════════════════════════════ */
-        const defaultProducts = [
-            {
-                name: "Nexus Core Hoodie",
-                desc: "Heavyweight black oversized graphic hoodie",
-                price: "3500",
-                image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop",
-                sizes: { XS:0, S:3, M:5, L:4, XL:2, XXL:1 }
-            },
-            {
-                name: "Matrix Cargo Pants",
-                desc: "Tactical multi-pocket cargo pants",
-                price: "4000",
-                image: "https://images.unsplash.com/photo-1517462964-21fdcec3f25b?q=80&w=600&auto=format&fit=crop",
-                sizes: { XS:0, S:0, M:3, L:6, XL:4, XXL:2 }
-            },
-            {
-                name: "Cyberpunk Graphic Tee",
-                desc: "Premium acid-wash graphic t-shirt",
-                price: "1800",
-                image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop",
-                sizes: { XS:2, S:1, M:0, L:0, XL:0, XXL:0 }
-            },
-            {
-                name: "Nexus Beanie",
-                desc: "Ribbed knit classic logo beanie",
-                price: "900",
-                image: "https://images.unsplash.com/photo-1576871337622-98d48d4aa53e?q=80&w=600&auto=format&fit=crop",
-                sizes: { "ONE SIZE": 8 }   // Sem tamanho variável
+        let productsDB = [];
+        let loadingProducts = false;
+
+        async function loadProducts() {
+            if (loadingProducts) return;
+            loadingProducts = true;
+            
+            const list = document.getElementById('product-list');
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                productsDB = data || [];
+                
+                if (productsDB.length === 0) {
+                    productsDB = [
+                        {
+                            id: 'default-1',
+                 
+                        }
+                    ];
+                }
+
+                renderProducts(productsDB);
+
+            } catch (e) {
+                console.error('Load error:', e);
+                showToast('Erro ao carregar produtos. A usar produtos de exemplo.', true);
+                // Fallback
+                productsDB = [
+                    {
+                        id: 'fallback-1',
+                        name: "Nexus Core Hoodie",
+                        description: "Heavyweight black oversized graphic hoodie",
+                        price: 3500,
+                        image_url: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop",
+                        sizes: { XS:0, S:3, M:5, L:4, XL:2, XXL:1 }
+                    },
+                    {
+                        id: 'fallback-2',
+                        name: "Matrix Cargo Pants",
+                        description: "Tactical multi-pocket cargo pants",
+                        price: 4000,
+                        image_url: "https://images.unsplash.com/photo-1517462964-21fdcec3f25b?q=80&w=600&auto=format&fit=crop",
+                        sizes: { XS:0, S:0, M:3, L:6, XL:4, XXL:2 }
+                    }
+                ];
+                renderProducts(productsDB);
+            } finally {
+                loadingProducts = false;
             }
-        ];
-        let productsDB = JSON.parse(localStorage.getItem("nexus_db"));
-        if (!productsDB || productsDB.length === 0) {
-            productsDB = defaultProducts;
-            localStorage.setItem("nexus_db", JSON.stringify(productsDB));
-        } else {
-            // Garante que produtos antigos (sem sizes) têm estrutura correcta
-            productsDB = productsDB.map(ensureSizes);
         }
-        let bag = JSON.parse(localStorage.getItem("nexus_bag")) || [];
+
         /* ════════════════════════════════════════
-           RENDER SIZES
+           RENDER PRODUCTS
         ════════════════════════════════════════ */
+        function renderProducts(data = productsDB) {
+            const list = document.getElementById("product-list");
+            
+            if (!data || data.length === 0) {
+                list.innerHTML = `<div style="grid-column:1/-1;padding:6rem 0;text-align:center;opacity:0.08;">
+                    <p class="font-heavy" style="font-size:2rem;font-style:italic;text-transform:uppercase;">Vazio</p>
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = data.map((p, idx) => {
+                const total = totalStock(p);
+                const isOOS = total === 0;
+                const hasSizes = p.sizes && typeof p.sizes === 'object' && Object.keys(p.sizes).length > 0;
+                const isOneSize = hasSizes && Object.keys(p.sizes).length === 1 && Object.keys(p.sizes)[0] === 'ONE SIZE';
+                
+                const imgUrl = p.image_url || p.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"%3E%3Crect width="400" height="400" fill="%231a1a1a"/%3E%3Ctext x="200" y="200" text-anchor="middle" fill="%23333" font-size="20" font-family="sans-serif"%3ENo image%3C/text%3E%3C/svg%3E';
+                
+                const btnDisabled = isOOS ? 'disabled' : (!isOneSize && hasSizes) ? 'disabled' : '';
+                const btnClass = (!isOneSize && hasSizes) ? 'needs-size' : '';
+                const btnLabel = isOOS ? 'Esgotado' : (!isOneSize && hasSizes) ? 'Selecciona o tamanho' : 'Adicionar à Bag';
+
+                return `
+                <div class="product-card" data-aos="fade-up" data-product-id="${p.id}" data-index="${idx}">
+                    <div class="card-image-wrap">
+                        <img src="${imgUrl}" alt="${p.name}" loading="lazy" 
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22400%22 height=%22400%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%22200%22 y=%22200%22 text-anchor=%22middle%22 fill=%22%23333%22 font-size=%2220%22 font-family=%22sans-serif%22%3ENo image%3C/text%3E%3C/svg%3E'">
+                        <div class="card-image-overlay"></div>
+                        ${stockBadgeHTML(p)}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <div>
+                                <p class="card-name">${p.name}</p>
+                                <p class="card-desc">${p.description || p.desc || ''}</p>
+                            </div>
+                            <span class="card-price">${p.price} MT</span>
+                        </div>
+                        ${renderStockInfo(p)}
+                        ${renderSizePills(p, idx)}
+                        <button class="btn-add ${btnClass}"
+                                data-add-btn="${idx}"
+                                ${btnDisabled}
+                                onclick="addToBag(${idx}, this)">
+                            <span>${btnLabel}</span>
+                        </button>
+                    </div>
+                </div>`;
+            }).join("");
+
+            if (typeof AOS !== 'undefined') AOS.refresh();
+        }
+
         function renderSizePills(p, cardIdx) {
-            if (!p.sizes) return '';
+            if (!p.sizes || typeof p.sizes !== 'object') return '';
             const entries = Object.entries(p.sizes);
             if (entries.length === 0) return '';
+            
             const pills = entries.map(([label, stock]) => {
                 const oos = stock === 0;
                 const low = stock > 0 && stock <= 3;
@@ -392,25 +545,12 @@
                     <span class="size-stock-dot ${dotClass}"></span>
                 </div>`;
             }).join('');
+            
             return `
             <p class="size-label">Tamanho</p>
             <div class="size-grid" id="sizes-${cardIdx}">${pills}</div>`;
         }
-        function selectSize(el, cardIdx) {
-            // Remove selected de todos os pills do mesmo card
-            document.querySelectorAll(`#sizes-${cardIdx} .size-pill`).forEach(p => p.classList.remove('selected'));
-            el.classList.add('selected');
-            // Activa botão
-            const btn = document.querySelector(`[data-add-btn="${cardIdx}"]`);
-            if (btn) {
-                btn.disabled = false;
-                btn.classList.remove('needs-size');
-                btn.querySelector('span').textContent = 'Adicionar à Bag';
-            }
-        }
-        /* ════════════════════════════════════════
-           RENDER STOCK INFO
-        ════════════════════════════════════════ */
+
         function renderStockInfo(p) {
             const total = totalStock(p);
             const status = stockStatus(total);
@@ -423,98 +563,92 @@
                 <span class="stock-info-text ${colors[status]}">${labels[status]}</span>
             </div>`;
         }
+
         function stockBadgeHTML(p) {
             const total = totalStock(p);
             if (total === 0) return `<div class="stock-badge out-stock">Esgotado</div>`;
             if (total <= 5) return `<div class="stock-badge low-stock">Últimas ${total}</div>`;
             return `<div class="stock-badge in-stock">Em stock</div>`;
         }
+
         /* ════════════════════════════════════════
-           RENDER PRODUCTS
+           SIZE SELECTION
         ════════════════════════════════════════ */
-        function renderProducts(data = productsDB) {
-            const list = document.getElementById("product-list");
-            if (data.length === 0) {
-                list.innerHTML = `<div style="grid-column:1/-1;padding:6rem 0;text-align:center;opacity:0.08;">
-                    <p class="font-heavy" style="font-size:2rem;font-style:italic;text-transform:uppercase;">Vazio</p>
-                </div>`;
-                return;
+        function selectSize(el, cardIdx) {
+            document.querySelectorAll(`#sizes-${cardIdx} .size-pill`).forEach(p => p.classList.remove('selected'));
+            el.classList.add('selected');
+            const btn = document.querySelector(`[data-add-btn="${cardIdx}"]`);
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('needs-size');
+                btn.querySelector('span').textContent = 'Adicionar à Bag';
             }
-            list.innerHTML = data.map(p => {
-                const idx = productsDB.indexOf(p);
-                const total = totalStock(p);
-                const isOOS = total === 0;
-                const hasSizes = p.sizes && Object.keys(p.sizes).length > 0;
-                const isOneSize = hasSizes && Object.keys(p.sizes).length === 1 && Object.keys(p.sizes)[0] === 'ONE SIZE';
-                // Botão: se tiver mais de um tamanho, pede selecção; senão, activa directo
-                const btnDisabled = (!isOneSize && hasSizes) ? 'disabled' : '';
-                const btnClass    = (!isOneSize && hasSizes) ? 'needs-size' : '';
-                const btnLabel    = isOOS ? 'Esgotado' : (!isOneSize && hasSizes) ? 'Selecciona o tamanho' : 'Adicionar à Bag';
-                return `
-                <div class="product-card" data-aos="fade-up">
-                    <div class="card-image-wrap">
-                        <img src="${p.image}" alt="${p.name}" loading="lazy">
-                        <div class="card-image-overlay"></div>
-                        ${stockBadgeHTML(p)}
-                    </div>
-                    <div class="card-body">
-                        <div class="card-meta">
-                            <div>
-                                <p class="card-name">${p.name}</p>
-                                <p class="card-desc">${p.desc}</p>
-                            </div>
-                            <span class="card-price">${p.price} MT</span>
-                        </div>
-                        ${renderStockInfo(p)}
-                        ${renderSizePills(p, idx)}
-                        <button class="btn-add ${btnClass}"
-                                data-add-btn="${idx}"
-                                ${isOOS ? 'disabled' : btnDisabled}
-                                onclick="addToBag(${idx}, this)">
-                            <span>${btnLabel}</span>
-                        </button>
-                    </div>
-                </div>`;
-            }).join("");
-            if (typeof AOS !== 'undefined') AOS.refresh();
         }
+
         /* ════════════════════════════════════════
            BAG ACTIONS
         ════════════════════════════════════════ */
+        let bag = [];
+
+        function loadBag() {
+            try {
+                const saved = localStorage.getItem('nexus_bag');
+                if (saved) bag = JSON.parse(saved);
+            } catch (e) { bag = []; }
+            if (bag.length > 0) document.getElementById("cart-dot").style.display = "block";
+        }
+
+        function saveBag() {
+            localStorage.setItem('nexus_bag', JSON.stringify(bag));
+            if (bag.length > 0) {
+                document.getElementById("cart-dot").style.display = "block";
+            } else {
+                document.getElementById("cart-dot").style.display = "none";
+            }
+        }
+
         function addToBag(index, btn) {
             const p = productsDB[index];
             if (!p) return;
-            // Descobre tamanho seleccionado
+
             const selectedPill = document.querySelector(`#sizes-${index} .size-pill.selected`);
             const isOneSize = p.sizes && Object.keys(p.sizes).length === 1 && Object.keys(p.sizes)[0] === 'ONE SIZE';
             const size = isOneSize ? 'ONE SIZE' : (selectedPill ? selectedPill.dataset.size : null);
+            
             if (!size && !isOneSize) {
-                // Sacudir o botão
                 btn.style.transform = 'scale(0.97)';
                 setTimeout(() => btn.style.transform = '', 150);
+                showToast('Selecciona um tamanho primeiro!', true);
                 return;
             }
-            bag.push({ ...p, selectedSize: size });
-            localStorage.setItem("nexus_bag", JSON.stringify(bag));
-            document.getElementById("cart-dot").style.display = "block";
-            // Flash card
+
+            bag.push({ 
+                ...p, 
+                selectedSize: size,
+                product_id: p.id 
+            });
+            saveBag();
+
             const card = btn?.closest('.product-card');
             if (card) { card.classList.add('flash'); setTimeout(() => card.classList.remove('flash'), 500); }
-            // Reset size selection
+
             if (selectedPill) {
                 selectedPill.classList.remove('selected');
                 btn.disabled = true;
                 btn.classList.add('needs-size');
                 btn.querySelector('span').textContent = 'Selecciona o tamanho';
             }
+
             updateCartUI();
+            showToast('Adicionado à bag! ✅');
         }
+
         function removeFromBag(i) {
             bag.splice(i, 1);
-            localStorage.setItem("nexus_bag", JSON.stringify(bag));
+            saveBag();
             updateCartUI();
-            if (bag.length === 0) document.getElementById("cart-dot").style.display = "none";
         }
+
         /* ════════════════════════════════════════
            CART MODAL
         ════════════════════════════════════════ */
@@ -522,20 +656,23 @@
             const modal = document.getElementById("modal-cart");
             const isHidden = modal.style.display === "none" || modal.style.display === "";
             modal.style.display = isHidden ? "flex" : "none";
-            updateCartUI();
+            if (isHidden) updateCartUI();
         }
+
         function updateCartUI() {
             const container  = document.getElementById("cartItems");
             const totalRow   = document.getElementById("cart-total-row");
             const totalVal   = document.getElementById("cart-total-val");
+
             if (bag.length === 0) {
                 container.innerHTML = `<div class="empty-state">Sua bag está vazia</div>`;
                 totalRow.style.display = "none";
                 return;
             }
+
             let total = 0;
             container.innerHTML = bag.map((item, i) => {
-                const price = parseFloat(item.price.toString().replace(/\D/g,'')) || 0;
+                const price = parseFloat(item.price) || 0;
                 total += price;
                 const sizeTag = item.selectedSize ? `<p class="cart-item-size">Tamanho: ${item.selectedSize}</p>` : '';
                 return `
@@ -543,64 +680,126 @@
                     <div>
                         <p class="cart-item-name">${item.name}</p>
                         ${sizeTag}
-                        <p class="cart-item-price">${item.price} MT</p>
+                        <p class="cart-item-price">${price} MT</p>
                     </div>
                     <button class="btn-remove" onclick="removeFromBag(${i})">Remover</button>
                 </div>`;
             }).join("");
+
             totalRow.style.display = "flex";
             totalVal.textContent = `${total} MT`;
         }
+
         /* ════════════════════════════════════════
            SEARCH
         ════════════════════════════════════════ */
         function searchProducts() {
             const term = document.getElementById("search-input").value.toLowerCase();
-            const filtered = productsDB.filter(p => p.name.toLowerCase().includes(term));
+            const filtered = productsDB.filter(p => 
+                p.name.toLowerCase().includes(term) || 
+                (p.description && p.description.toLowerCase().includes(term))
+            );
             renderProducts(filtered);
         }
+
         /* ════════════════════════════════════════
-           ORDER (WhatsApp) — inclui tamanho
+           SEND ORDER TO SUPABASE + WHATSAPP
         ════════════════════════════════════════ */
-        function sendOrder() {
+        async function sendOrder() {
             const phone = document.getElementById("phone").value;
             const loc   = document.getElementById("location").value;
-            if (bag.length === 0) { alert("Sua bag está vazia!"); return; }
-            if (!phone || phone.trim().length < 5) { alert("Insira o seu contacto."); return; }
-            let msg = `PEDIDO - NEXUS SIVE\n_______________________________\n\n`;
-            let total = 0;
-            bag.forEach((item, i) => {
-                const size = item.selectedSize ? ` [${item.selectedSize}]` : '';
-                msg += `${i+1}. ${item.name.toUpperCase()}${size} - ${item.price} MT\n`;
-                total += parseFloat(item.price.toString().replace(/\D/g,'')) || 0;
-            });
-            msg += `_______________________________\n\n`;
-            msg += `TOTAL: ${total} MT\n`;
-            msg += `BAIRRO: ${loc.toUpperCase()}\n`;
-            msg += `CONTACTO: ${phone}\n\n`;
-            msg += `_Enviado pelo Marketplace Nexus_`;
-            window.open(`https://wa.me/258879151175?text=${encodeURIComponent(msg)}`, '_blank');
+            
+            if (bag.length === 0) {
+                showToast('Sua bag está vazia!', true);
+                return;
+            }
+            if (!phone || phone.trim().length < 5) {
+                showToast('Insira o seu contacto.', true);
+                return;
+            }
+            if (!loc || loc === '') {
+                showToast('Selecciona o local de entrega.', true);
+                return;
+            }
+
+            const btn = document.getElementById('btn-finalize');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Enviando...</span>';
+
+            try {
+                const orderItems = bag.map(item => ({
+                    name: item.name,
+                    price: item.price,
+                    selectedSize: item.selectedSize || 'ONE SIZE',
+                    product_id: item.id || item.product_id
+                }));
+
+                const total = bag.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+
+                const orderData = {
+                    items: orderItems,
+                    total: total,
+                    location: loc,
+                    phone: phone.trim(),
+                    status: 'pendente',
+                    created_at: new Date().toISOString()
+                };
+
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .insert([orderData])
+                    .select();
+
+                if (error) throw error;
+
+                let msg = `🛍️ *NOVO PEDIDO - NEXUS SIVE*\n`;
+                msg += `━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+                
+                bag.forEach((item, i) => {
+                    const size = item.selectedSize ? ` [${item.selectedSize}]` : '';
+                    msg += `${i+1}. ${item.name.toUpperCase()}${size}\n`;
+                    msg += `   💰 ${item.price} MT\n`;
+                });
+                
+                msg += `\n━━━━━━━━━━━━━━━━━━━━━━━\n`;
+                msg += `💰 *TOTAL: ${total} MT*\n`;
+                msg += `📍 *ENTREGA: ${loc.toUpperCase()}*\n`;
+                msg += `📞 *CONTACTO: ${phone.trim()}*\n\n`;
+                msg += `_Pedido enviado via Marketplace_`;
+
+                window.open(`https://wa.me/258879151175?text=${encodeURIComponent(msg)}`, '_blank');
+
+                bag = [];
+                saveBag();
+                updateCartUI();
+                document.getElementById("cart-dot").style.display = "none";
+                
+                setTimeout(() => toggleCart(), 500);
+                
+                showToast('Pedido enviado com sucesso! ✅');
+
+            } catch (e) {
+                console.error('Order error:', e);
+                showToast('Erro ao enviar pedido: ' + e.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Finalizar Pedido</span>';
+            }
         }
-        /* ════════════════════════════════════════
-           INTRO
-        ════════════════════════════════════════ */
-        function startIntro() {
-            const slogan = "Small details, big differences.";
-            let i = 0;
-            const el = document.getElementById("typewriter");
-            const timer = setInterval(() => {
-                if (i < slogan.length) { el.textContent += slogan.charAt(i); i++; }
-                else { clearInterval(timer); setTimeout(() => document.getElementById("intro-overlay").classList.add("hide"), 1200); }
-            }, 50);
-        }
+
         /* ════════════════════════════════════════
            INIT
         ════════════════════════════════════════ */
-        window.onload = () => {
+        window.onload = function() {
             startIntro();
-            renderProducts();
+            loadBag();
+            loadProducts();
             if (bag.length > 0) document.getElementById("cart-dot").style.display = "block";
         };
+
+        document.getElementById('modal-cart').addEventListener('click', function(e) {
+            if (e.target === this) toggleCart();
+        });
     </script>
 </body>
 </html>
